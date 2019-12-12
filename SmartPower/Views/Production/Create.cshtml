@@ -1,0 +1,59 @@
+﻿@model SmartPower.Domin.ProductionViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+
+
+<div class="card" style="width:50%">
+    <div class="card-header"><strong>Add</strong><small> Production</small></div>
+    <div class="card-body card-block">
+
+        <form asp-action="Create" class="conform center ">
+             <div class="form-group">
+                    <select asp-for="FacId" class="form-control">
+                        <option selected disabled> Factory</option>
+                        @foreach (var factory in ViewBag.factories)
+                    {
+                    <option value="@factory.FacId">@factory.Name</option>
+
+                    }
+                    </select>
+                    <span asp-validation-for="FacId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+           
+                    <input asp-for="Quantity" min="0" type="number" class="form-control" placeholder="Quantity" required />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    
+                    <select asp-for="Type" class="form-control" required>
+                        <option selected disabled> Type</option>
+                        <option value="kg"> KG</option>
+                        <option value="ton"> TON</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input asp-for="Date" type="date" class="form-control"  />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+
+
+      
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary btn-lg  pull-right" style="width:30%;" />
+            </div>
+        </form>
+    </div>
+ </div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

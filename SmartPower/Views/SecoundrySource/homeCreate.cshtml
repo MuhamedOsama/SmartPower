@@ -1,0 +1,295 @@
+﻿@model SmartPower.Controllers.Domin.SecoundrySouresDataModelSim
+
+@{
+    ViewData["Title"] = "Create";
+}
+<script>
+
+    var checkprimary = 0;
+    function changeNode(value)
+    {
+        if (value == "1")
+        {
+            var select = document.getElementById("3N");
+            document.getElementById("1N").style.visibility = "visible";
+            select.style.visibility = "hidden";
+        }
+        else
+        {
+            document.getElementById("1N").style.visibility = "visible";
+            var select = document.getElementById("3N");
+            select.style.visibility = "visible";
+        }
+    }
+
+    function empty()
+    {
+        var slct = document.getElementById("other2");
+        slct.style.display = "block";
+
+        var list = document.getElementById("1phase");
+        if (checkprimary == 1) {
+            var x = document.getElementById("fac").value;
+            var x2 = document.getElementById("selectiontype").value;
+            getValidPrimary(x2, x);
+        }
+    }
+
+    function fillPrimayList(data)
+    {
+         var list = document.getElementById("1phase");
+        list.innerHTML = "";
+        list.innerHTML = "<option selected disabled>Select Primary</option>";
+        for (i = 0; i < data.length; i++) {
+            var pName = data[i].name;
+            var pId = data[i].code;
+            list.innerHTML += "<option value='" + pId + "'>" + pName + "</option>";
+        }
+    }
+
+    //function fillNodes(data)
+    //{
+    //    var x = document.getElementById("n1");
+    //    var x2 = document.getElementById("n2");
+    //    var x3 = document.getElementById("n3");
+    //    x.innerHTML = "";
+    //    x2.innerHTML = "";
+    //    x3.innerHTML = "";
+
+    //    if (data.dN1 == "-1") {
+    //        x.innerHTML  += "<option  value='1'>Node 1</option>";
+    //        x2.innerHTML += "<option  value='2'>Node 2</option>";
+    //        x3.innerHTML += "<option  value='3'>Node 3</option>";
+    //    }
+    //    if (data.dN2 == "-1") {
+    //         x.innerHTML += "<option  value='2'>Node 2</option>";
+    //        x2.innerHTML += "<option  value='1'>Node 1</option>";
+    //        x3.innerHTML += "<option  value='2'>Node 2</option>";
+    //    }
+    //    if (data.dN3 == "-1") {
+    //        x.innerHTML  += "<option  value='3'>Node 3</option>";
+    //        x2.innerHTML += "<option  value='3'>Node 3</option>";
+    //        x3.innerHTML += "<option  value='1'>Node 1</option>";
+    //    }
+    //}
+
+    function getValidPrimary(value, factoryId)
+    {
+        document.getElementById("other").style.display = "block";
+        checkprimary = 1;
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetValidPrimarySource", "PhaseConnection")",
+                    dataType: "Json",
+                    cache: false,
+                    data: { type: value, factoryid:factoryId},
+                    success: function (data)
+                    {
+                        fillPrimayList(data);
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+                });
+    }
+
+      @*function getValidNode(value) {
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetValidNodes", "PhaseConnection")",
+                    dataType: "Json",
+                    cache: false,
+                    data: { id: value,},
+                    success: function (data)
+                    {
+                        fillNodes(data);
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+                });
+        }*@
+
+    function topo(Value)
+    {
+        var x = document.getElementById("other3");
+        if (Value == 3) {
+            x.style.display = "block";
+            document.getElementById("topologyslct").required = true;
+
+        }
+        else {
+            x.style.display = "none";
+            document.getElementById("topologyslct").required = false;
+
+        }
+
+    }
+</script>
+
+
+
+<div class="card" style="width:55%">
+    <div class="card-header"><strong>Create</strong><small> Secondary Source</small></div>
+    <div class="card-body card-block">
+
+        <form asp-action="homeCreate">
+
+            <div class="form-group row">
+                <lable class="col-sm-4 col-form-label"> Factories Name </lable> <br />
+                <select asp-for="FacId" id="fac" class="form-control col-sm-8" onchange="empty()" required>
+                    <option selected disabled value="">Factory</option>
+                    @foreach (var factory in ViewBag.factories)
+                    {
+                        <option value="@factory.FacId">@factory.Name</option>
+
+                    }
+                </select>
+            </div>
+
+            <div class="form-group row">
+                <lable class="col-sm-4 col-form-label"> Secondary Source </lable> <br />
+                <input asp-for="Name" class="form-control col-sm-8" placeholder="Name" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <lable class="col-sm-4 col-form-label"> Design Value </lable> <br />
+                <input asp-for="DesignValue" type="number" min="0" class="form-control col-sm-8" placeholder="Design Value" required />
+                <span asp-validation-for="DesignValue" class="text-danger"></span>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label" asp-for="Code"></label>
+
+                <select asp-for="Code" class="form-field-select-1 form-control col-sm-8">
+                    @{
+                        var com = "" + '2';
+
+                        for (int i = 0; i < Enumerable.Count(ViewBag.secondaries); i++)
+                        {
+                            int count = 0;
+                            for (int k = 0; k < Enumerable.Count(ViewBag.secondaries); k++)
+                            {
+                                if (!(com.Equals(ViewBag.secondaries[k].Code)))
+                                {
+                                    count++;
+                                }
+                            }
+
+                            if (count == Enumerable.Count(ViewBag.secondaries))
+                            {
+                                <option value="@com"> @com </option>
+                                i--;
+                            }
+                            var n = int.Parse(com);
+                            n = n + 2;
+                            com = n.ToString();
+
+                        }
+                        for (int i = int.Parse(com); i <= (8 + int.Parse(com)); i = i + 2)
+                        {
+
+                            <option value="@i"> @i </option>
+                        }
+
+                    }
+                </select>
+            </div>
+
+
+
+            <div class="form-group row">
+                <lable class="col-sm-4 col-form-label"> Max Current</lable> <br />
+                <input asp-for="MaxCurrent" type="number" min="0" class="form-control col-sm-8" placeholder="Max Current" required />
+                <span asp-validation-for="MaxCurrent" class="text-danger"></span>
+            </div>
+
+
+
+
+            <div id="other2" style="display:none">
+
+                <div class="form-group row" id="slcttype">
+                    <label class="col-sm-4">Phase Type</label>
+                    <select asp-for="Type" class=" col-sm-8 form-field-select-1 form-control " id="selectiontype" onchange="getValidPrimary(this.value, fac.value) ,changeNode(this.value),topo(this.value)" required>
+                        <option selected disabled value="">Phase Type</option>
+                        <option value="1"> Single Phase</option>
+                        <option value="3"> Three Phase</option>
+
+                    </select>
+                </div>
+            </div>
+            <div id="other3" style="display:none">
+
+                <div class="form-group row" id="topolgy">
+                    <label class="col-sm-4">Topology</label>
+
+                    <select asp-for="Topology" id="topologyslct" class="col-sm-8 form-field-select-1 form-control">
+                        <option selected disabled value="">Topology</option>
+
+                        <option value="Star"> Star </option>
+                        <option value="Delta"> Delta</option>
+
+                    </select>
+                </div>
+            </div>
+            <div id="other" style="display:none">
+
+                <div class="form-group row" id="slctprim">
+                    <lable class="col-sm-4 col-form-label"> Primarries</lable> <br />
+                    <select asp-for="PS_Id" class="col-sm-8 form-field-select-1 form-control" id="1phase" onchange="getValidNode(this.value)" required>
+                        <option disabled selected value=""> Select Primary</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 form-group " id="1N" style="visibility:hidden">
+                    <label> Node 1</label>
+                    <select asp-for="dN1" class="form-field-select-1 form-control" id="n1" required>
+                        <option disabled selected value="">Select Node</option>
+                        <option value='1'>Node 1</option>
+                        <option value='2'>Node 2</option>
+                        <option value='3'>Node 3</option>
+                    </select>
+                </div>
+                <div id="3N" class="col-sm-8 row" style="visibility:hidden">
+
+                    <div class="col-sm-6 form-group">
+                        <label> Node 2</label>
+                        <select asp-for="dN2" class="form-field-select-1 form-control" id="n2">
+                            <option disabled selected value="">Select Node</option>
+                            <option value='2'>Node 2</option>
+                            <option value='1'>Node 1</option>
+                            <option value='3'>Node 3</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label> Node 3</label>
+                        <select asp-for="dN3" class="form-field-select-1 form-control" id="n3">
+                            <option disabled selected value="">Select Node</option>
+                            <option value='3'>Node 3</option>
+                            <option value='2'>Node 2</option>
+                            <option value='1'>Node 1</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+            <input type="submit" value="Create" class="btn btn-info btn-md" />
+
+            <a asp-action="Index" class="btn btn-info btn-md"> Cancel</a>
+        </form>
+     </div>
+ </div>
+    
+
+
+
+
+
+
+
+
+
+

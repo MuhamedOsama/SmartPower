@@ -1,0 +1,139 @@
+﻿@model SmartPower.Domin.PowerPeakViewModel
+
+
+@{
+    ViewData["Title"] = "Peak Per Day";
+}
+
+<div class="table-header">
+    <h2 class="hh2"></h2>
+
+</div>
+
+
+<script>
+    function slctsource(value) {
+
+        var n = document.getElementById("slct");
+        if (value == 1) {
+
+            document.getElementById("prim").style.display = "block";
+            document.getElementById("load").style.display = "none";
+            document.getElementById("prim").required = true;
+            document.getElementById("load").required = false;
+
+
+        }
+        else {
+
+            document.getElementById("prim").style.display = "none";
+            document.getElementById("load").style.display = "block";
+            document.getElementById("load").required = true;
+            document.getElementById("prim").required = false;
+
+
+        }
+
+    }
+</script>
+
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Power Peak Per Day</strong>
+    </div>
+    <div class="card-header">
+        <form action="PeakPerDay" method="post">
+            <select name="Type" id="slct" class="myform-control" onchange="slctsource(this.value)">
+                <option disabled selected> Select Source</option>
+                <option value="1"> Primary</option>
+
+                <option value="2"> Load</option>
+            </select>
+
+            <select name="primId" id="prim" class="myform-control" style="display:none">
+                <option disabled> Select Primary</option>
+                @foreach (var primary in ViewBag.Primary)
+                {
+                    <option value="@primary.Code">@primary.Name</option>
+
+                }
+
+            </select>
+
+            <select name="loadId" id="load" class="myform-control" style="display:none">
+                <option disabled> Select load</option>
+                @foreach (var loads in ViewBag.loads)
+                {
+                    <option value="@loads.Id">@loads.name</option>
+
+                }
+            </select>
+            <input name="date" type="date" required class="myform-control" />
+
+            <button type="submit" value="Search" style="background:none;border:none"><i class="fa fa-search"></i>   Search</button>
+        </form>
+    </div>
+    <div>
+        <p> Power Peak of @Model.name </p>
+    </div>
+    <div class="table-stats order-table ov-h">
+        <table id="simple-table" class="table ">
+            <thead>
+                <tr>
+                    <th>
+                        Phase
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Peak power Value
+                    </th>
+                  @if (Model.loadtype == "1")
+                  {
+                    <th>Rating Power Value</th>
+                    <th>Peak To Rate Percentage  </th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Id != 0)
+                {
+                <tr>
+                    <th>I</th>
+                    <th>@Model.dateP1.Date</th>
+                    <th>@Model.peakP1 (KW)</th>
+                    @if (Model.loadtype == "1")
+                    {
+                        <th>@Model.RatingPowerValue</th>
+                        <th>@Model.PeakToRatePercentage1 %</th>
+                    }
+                    </tr>
+                <tr>
+                    <th>II</th>
+                    <th>@Model.dateP2.Date</th>
+                    <th>@Model.peakP2 (KW)</th>
+                    @if (Model.loadtype == "1")
+                    {
+                        <th>@Model.RatingPowerValue</th>
+                        <th>@Model.PeakToRatePercentage2 %</th>
+                    }
+                    </tr>
+                <tr>
+                    <th>III</th>
+                    <th>@Model.dateP3.Date</th>
+                    <th>@Model.peakP3 (KW)</th>
+                    @if(Model.loadtype == "1")
+                    {
+                        <th>@Model.RatingPowerValue</th>
+                        <th>@Model.PeakToRatePercentage3 %</th>
+                    }
+
+                 </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

@@ -1,0 +1,110 @@
+﻿@model SmartPower.Controllers.Domin.PrimarySourceDataModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2> @Model.Name's Details</h2>
+
+<div>
+   
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FacName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FacName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DesignValue)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DesignValue)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.MaxCurrent)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.MaxCurrent)
+
+        </dd>
+        <dt>
+             Phase Type
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id  }) |
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<br />
+<div class="row">
+    <div class="col-lg-6">
+        <h4>@Model.Name's Secondary Sources </h4>
+
+    </div>
+    <div class="col-lg-6">
+        @Html.ActionLink("Create New Secondary Source", "Create", "SecoundrySource", new { Id = Model.Id }, new { @class = "btn btn-xs btn-success " })
+
+    </div>
+</div>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Id</th>
+            <th>Code</th>
+
+            <th></th>
+        </tr>
+
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.secondarySources)
+        {
+            <tr>
+                <td></td>
+                <td>
+                    @Html.DisplayFor(ModelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(ModelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(ModelItem => item.Code)
+                </td>
+                <td>
+
+                    @Html.ActionLink("Edit", "Edit", new { Id = item.Id }, new { @class = "btn btn-xs btn-warning " })
+                    @Html.ActionLink("Details", "Details", "SecoundrySource", new { Id = item.Id }, new { @class = "btn btn-xs btn-primary " })
+                    @Html.ActionLink("Delete", "Delete", "SecoundrySource", new { Id = item.Id }, new { @class = "btn btn-xs btn-danger " })
+                </td>
+            </tr>
+
+        }
+    </tbody>
+
+
+
+</table>
+

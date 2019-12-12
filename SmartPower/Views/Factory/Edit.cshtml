@@ -1,0 +1,38 @@
+﻿@model SmartPower.Controllers.Domin.FactoryDataModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<div class="card" style="width:50%;">
+    <div class="card-header"><strong>Factory</strong><small> Configuration</small></div>
+    <div class="card-body card-block">
+        <form asp-action="Edit" class="conform">
+            <h5> Edit @Model.Name </h5>
+
+            @Html.HiddenFor(m => m.FacId)
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Scale" class="control-label"></label>
+                <input asp-for="Scale" class="form-control" />
+                <span asp-validation-for="Scale" class="text-danger"></span>
+            </div>
+
+
+
+            <div class="form-group">
+                <label asp-for="businessType" class="control-label"></label>
+                <input asp-for="businessType" class="form-control" />
+                <span asp-validation-for="businessType" class="text-danger"></span>
+            </div>
+            <input type="submit" value="Save" class="btn btn-info btn-md"/>
+            <button asp-action="Index" class="btn btn-info btn-md"> Cancel</button>
+        </form>
+    </div>
+</div>
+
+

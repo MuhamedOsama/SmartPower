@@ -1,0 +1,72 @@
+﻿@model SmartPower.Controllers.Domin.SecoundrySouresDataModelSim
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<div class="row">
+
+    <form asp-action="Create" class="conform">
+        <h1>Create Secondary Source</h1>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col-lg-7 " style="margin-top:25px">
+            <div class="col-lg-12">
+                <div class="form-group ">
+                    <label asp-for="Name" class="control-label"></label>
+
+                    <input asp-for="Name" class="form-control" placeholder="Name"/>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label asp-for="DesignValue" class="control-label"></label>
+
+                    <input asp-for="DesignValue" class="form-control" placeholder="Design Value" />
+                    <span asp-validation-for="DesignValue" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-lg-12">
+
+                <div class="form-group">
+                    <label asp-for="MaxCurrent" class="control-label"></label>
+                    <input asp-for="MaxCurrent" class="form-control" placeholder="Max Current" />
+                    <span asp-validation-for="MaxCurrent" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-lg-12">
+
+                <div class="form-group">
+                    <label asp-for="Type"></label>
+                    <select asp-for="Type">
+                        <option value="1"> One Phase</option>
+                        <option value="3"> Three Phase</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-12">
+
+                <div class="form-group">
+                    <label asp-for="Topology"></label>
+                    <select asp-for="Topology">
+                        <option value="Star"> Star </option>
+                        <option value="Delta"> Delta</option>
+
+                    </select>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(m => m.FacId, new { value = Model.FacId })
+        <div class="form-group">
+            <input type="submit" value="Create" class="bouton-contact" />
+        </div>
+    </form>
+
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

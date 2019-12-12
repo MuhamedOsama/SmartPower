@@ -1,0 +1,66 @@
+﻿@model List<string>
+
+<head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" />
+
+</head>
+
+<script>
+    setTimeout(function () {
+        window.location.reload(1);
+    }, 7000);
+</script>
+
+<div class="table-stats order-table ov-h">
+    <table id="simple-table" class="table ">
+        <thead>
+            <tr>
+                <th>
+                    Device Code
+                </th>
+                <th>
+                    Device  Status
+                </th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @for (int x = 0; x < Model.Count; x++)
+            {
+                <tr>
+                    <td>@Model[x]</td>
+                    <td class="fas fa-toggle-on pull-right" style="color: dodgerblue; "></td>
+
+
+                </tr>
+
+            }
+             @for (int x = 0; x < Enumerable.Count(ViewBag.secondaries); x++)
+             {
+
+                 if (!Model.Contains(ViewBag.secondaries[x].Code))
+                 {
+                    <tr>
+                        <td>@ViewBag.secondaries[x].Code</td>
+                        <td class="fas fa-toggle-off  pull-right"></td>
+                    </tr>
+
+                 }
+             }
+                @for (int y = 0;y < Enumerable.Count(ViewBag.primaries); y++)
+                {
+
+                    if (!Model.Contains(ViewBag.primaries[y].Code))
+                    {
+                        <tr>
+                            <td>@ViewBag.primaries[y].Code</td>
+                            <td class="fas fa-toggle-off  pull-right"></td>
+                        </tr>
+
+                    }
+
+                }
+            </tbody>
+        </table>
+</div>

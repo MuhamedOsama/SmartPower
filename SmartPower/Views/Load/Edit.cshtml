@@ -1,0 +1,165 @@
+﻿@model SmartPower.Controllers.Domin.LoadDataModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script>
+
+    function disp(value) {
+        var x = document.getElementById("busiother");
+
+        if (value == -1) {
+            x.style.display = "block";
+            document.getElementById("inp").required = true;
+        }
+        else {
+
+            x.style.display = "none";
+            document.getElementById("inp").required = false;
+
+        }
+    }
+
+
+
+
+
+
+    function indsOREnter() {
+
+        var x1 = document.getElementById("Radio1");
+        var x2 = document.getElementById("Radio2");
+        if (x1.checked) {
+            document.getElementById("abdo").innerHTML = "<option class=\"industselect\" value=\"heading load\">Heading Load</option>" +
+                "<option class=\"industselect\" value=\"induction motor\">Induction Motor</option>" +
+                "<option class=\"industselect\" value=\"sunc motor\">Sunc Motor</option>";
+        }
+        if (x2.checked) {
+
+            document.getElementById("abdo").innerHTML =
+                "<option class=\"Enterpselect\"  value = \"lighting load\" > Lighting Load</option >" +
+                "<option class=\"Enterpselect\"  value=\"hvac motor\">HVAC Motor</option>" +
+                "<option class=\"Enterpselect\"  value=\"app motor\">App Motor</option>";
+        }
+
+    }
+</script>
+
+<div class="card" style="width:50%">
+    <div class="card-header"><strong>Load</strong><small> Configuration </small> </div>
+    <div class="card-header">
+        <form asp-action="Edit" class="conform">
+            <h5> Edit @Model.name</h5>
+
+            <input id="Radio1" class="rad" name="Rdo" type="radio" checked onclick="indsOREnter()" />
+            <label class="control-label">Industrial Load</label>
+            <input id="Radio2" class="rad" name="Rdo" type="radio" onclick="indsOREnter()" />
+            <label class="control-label">Enteprise Load</label>
+            <br />
+            <br /><br />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group ">
+                <!--industrial Load-->
+                <label asp-for="Type" class="control-label">Indusrial Load Type</label>
+                <select asp-for="Type" class="form-control selecttypecls" id="abdo">
+                    <option class="industselect" value="heading load">Heading Load</option>"
+                    <option class="industselect" value="induction motor">Induction Motor</option>"
+                    <option class="industselect" value="sunc motor">Sunc Motor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="name" class="control-label"></label>
+                <input asp-for="name" value="@Model.name" class="form-control" />
+                <span asp-validation-for="name" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group ">
+                <label class=" col-form-label"> Function</label>
+                <select asp-for="Function" class="form-control " onchange="disp(this.value)" required>
+                    <option value=" @Model.Function"> @Model.Function</option>
+                    @foreach (var i in ViewBag.Functions)
+                    {
+                        @if (i != Model.Function) { 
+                        <option value="@i">@i</option>
+                        }
+                    }
+                    <option value="-1">Other..</option>
+
+                </select>
+
+            </div>
+
+
+            <div align="right" class="form-group " style="display:none" id="busiother">
+                <lable >  </lable>
+                <input asp-for="FunctionOther" class="form-control " placeholder="create new Function" id="inp" required />
+                <span asp-validation-for="Function" class="text-danger"></span>
+            </div>
+
+
+            @*<div class="form-group">
+                <label asp-for="Function" class="control-label"></label>
+                <input asp-for="Function" value="@Model.Function" class="form-control" />
+                <span asp-validation-for="Function" class="text-danger"></span>
+            </div>*@
+
+
+
+
+
+
+
+            <div class="form-group">
+                <label asp-for="Connection" class="control-label"></label>
+                <input asp-for="Connection" value="@Model.Connection" class="form-control" />
+                <span asp-validation-for="Connection" class="text-danger"></span>
+            </div>
+
+            <div class="form-group ">
+                <label asp-for="PowerFactor" class="control-label"></label>
+                <input asp-for="PowerFactor" class="form-control" />
+                <span asp-validation-for="PowerFactor" class="text-danger"></span>
+            </div>
+            <div class="form-group ">
+                <label asp-for="Power" class="control-label"></label>
+                <input asp-for="Power" class="form-control" />
+                <span asp-validation-for="Power" class="text-danger"></span>
+            </div>
+            <div class="form-group ">
+                <label asp-for="RatingCurrent" class="control-label"></label>
+                <input asp-for="RatingCurrent" class="form-control" />
+                <span asp-validation-for="RatingCurrent" class="text-danger"></span>
+            </div>
+            <div class="form-group ">
+                <label asp-for="RatingVoltage" class="control-label"></label>
+                <input asp-for="RatingVoltage" class="form-control" />
+                <span asp-validation-for="RatingVoltage" class="text-danger"></span>
+            </div>
+            <div class="form-group ">
+                <label asp-for="RatingTemp" class="control-label"></label>
+                <input asp-for="RatingTemp" class="form-control" />
+                <span asp-validation-for="RatingTemp" class="text-danger"></span>
+            </div>
+            <input asp-for="secondarySourceId" value="@Model.secondarySourceId" type="hidden" class="form-control" />
+            <input asp-for="Id" value="@Model.Id" type="hidden" class="form-control" />
+            <input asp-for="code" value="@Model.code" hidden>
+            <input asp-for="SourceId" value="@Model.SourceId" hidden />
+            <input asp-for="sourceName" value="@Model.sourceName" hidden />
+            <input asp-for="PhaseType" value="@Model.PhaseType" hidden />
+            <input asp-for="Type" value="@Model.Type" hidden />
+            <input asp-for="loadpramid" value="@Model.loadpramid" hidden />
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-info btn-md" />
+                <a asp-action="Index" class="btn btn-info btn-md"> Cancel</a>
+            </div>
+
+        </form>
+    </div>
+ </div>
+

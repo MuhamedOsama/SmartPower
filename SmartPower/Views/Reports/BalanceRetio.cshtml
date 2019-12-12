@@ -1,0 +1,63 @@
+﻿@model IEnumerable<SmartPower.Controllers.Domin.SourceBalnceRetio>
+
+@{
+    ViewData["Title"] = "BalanceRetio";
+}
+
+<h2>BalanceRetio</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.SourceId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SourceName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Source_tybe)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.I_Retio)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.V_Retio)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.pf_Retio)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SourceId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SourceName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Source_tybe)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.I_Retio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.V_Retio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.pf_Retio)
+            </td>
+            <td>
+                @Html.ActionLink("Record", "Record", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

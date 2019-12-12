@@ -1,0 +1,123 @@
+﻿@model IEnumerable<SmartPower.Controllers.Domin.SecoundrySouresDataModelSim>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<script>
+    
+      function getvalidprimary(value) 
+      {
+        
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetprimarySourcebyfacid", "PrimarySource")",
+                    dataType: "Json",
+                    cache: false,
+                     data: { factoryid: value,},
+                    success: function (data)
+                    {
+                       
+                        fillprimary(data);
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+                });
+    }
+    function fillprimary(data)
+    {
+        var prim = document.getElementById("slctprimary");  
+        prim.innerHTML ="<option value=\"-1\" disabled selected> Primary</option>"
+        for (i = 0; i < data.length; i++) {
+            var pName = data[i].name;
+            var pId = data[i].Code;
+            prim.innerHTML += "<option value='" + pId + "'>" + pName + "</option>";
+     
+        }
+    }
+</script>
+<div class="card">
+    <div class="card-header" >
+        <strong class="card-title">Secondarey source</strong>
+    </div>
+    <div class="card-header">
+        <form action="Index">
+       
+                <select name="facid" onchange="getvalidprimary(this.value)" class="myform-control">
+                    <option value="-1" disabled selected> Factory</option>
+                    @foreach (var factory in ViewBag.factories)
+                            {
+                            <option value="@factory.FacId">@factory.Name</option>
+
+                            }
+                </select>
+          
+     
+     
+
+                <select id="slctprimary" name="primary" class="myform-control">
+                    <option value="-1" disabled selected> Primary</option>
+                </select>
+                <button type="submit" value="Search"  style="background:none; border:none"><i class="fa fa-search"></i> Search</button>            
+                  <a asp-action="homecreate" style="float:right;"><i class="fa fa-plus-square"></i>Create New </a>              
+        </form>
+    </div>
+    <div class="table-stats order-table ov-h">
+        <table id="simple-table" class="table">
+            <thead>
+                <tr>
+                    <th >
+                        Code
+                    </th>
+                    <th >Secondary Source Name</th>
+                    <th >Factory Name</th>
+                    <th >Pirmary Source Name </th>
+                    <th >Design Value</th>
+                    <th >Type</th>
+                    <th >MaxCurrent</th>
+                    <th >Topology</th>
+                    <th ></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td >
+                            @Html.DisplayFor(modelItem => item.Code)
+                        </td>
+                        <td >
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td >
+                            @Html.DisplayFor(modelItem => item.FacName)
+                        </td>
+                        <td >
+                            @Html.DisplayFor(modelItem => item.PirmarySourceName)
+                        </td>
+                        <td >
+                            @Html.DisplayFor(modelItem => item.DesignValue)
+                        </td>
+                        <td >
+                            @Html.DisplayFor(modelItem => item.Type)
+                        </td>
+                        <td >
+                            @Html.DisplayFor(modelItem => item.MaxCurrent)
+                        </td>
+                        <td >
+                            @Html.DisplayFor(modelItem => item.Topology)
+                        </td>
+
+                        <td >
+                            @Html.ActionLink("", "Edit", new { Id = item.Code }, new { @class = "ace-icon fa fa-pencil bigger-120 btn btn-xs btn-info  " })
+                            @Html.ActionLink("", "Delete", new { Id = item.Code }, new { @class = "ace -icon fa fa-trash-o bigger-120 btn btn-xs btn-danger " })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

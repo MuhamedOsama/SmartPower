@@ -1,0 +1,59 @@
+﻿@model IEnumerable<SmartPower.Controllers.Domin.SpikeLogsDataModel>
+
+@{
+    ViewData["Title"] = "SpikeLogs";
+}
+
+<h2>Current Spike Logs</h2>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PhaseName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Value)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Time)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.SourceName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SourceCode)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhaseName)
+            </td>
+            <td style="color:darkred">
+              
+                    @Html.DisplayFor(modelItem => item.Value)
+
+                
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.SourceName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SourceCode)
+            </td>
+
+        </tr>
+}
+    </tbody>
+</table>

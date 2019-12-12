@@ -1,0 +1,153 @@
+﻿@model SmartPower.Domin.Report.RushHourViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<script>
+
+    function slctsource(value) {
+        var n = document.getElementById("slct");
+        if (value == 1) {
+            document.getElementById("prim").style.display = "block";
+            document.getElementById("load").style.display = "none";
+
+        }
+        else {
+
+            document.getElementById("prim").style.display = "none";
+            document.getElementById("load").style.display = "block";
+
+        }
+
+    }
+
+</script>
+
+
+
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Rush Hour</strong>
+
+    </div>
+    <div  class="card-header">
+        <form action="RushHour">
+              
+              
+                        <select name="loadId" id="load" class="myform-control">
+                            <option disabled selected> Select Load</option>
+                            @foreach (var loads in ViewBag.loads)
+                            {
+                                <option value="@loads.Id">@loads.name</option>
+
+                            }
+                        </select>
+                   
+                   Date   <input name="date" type="date" class="myform-control"/>
+              <button type="submit" value="Search" style="background:none;border:none">  <i class="fa fa-search"></i>Search</button>
+
+
+                
+        </form>
+    </div>
+
+    @if (ViewBag.LoadName != null)
+    {
+     <div>     @ViewBag.LoadName</div>
+    }
+    <div class="table-stats order-table ov-h">
+        <table id="simple-table" class="table  ">
+            <thead>
+                <tr>
+                    <th>
+                        Phase
+                    </th>
+
+                    <th>
+                        Start Time
+                    </th>
+                    <th>
+                        End Time
+                    </th>
+                    <th>
+                        Peak Value (A)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.loadtype == "3")
+                {
+                    <tr>
+                        @if (Model.peack1 != -1)
+                        {
+                            <td> I </td>
+                            <td> @Model.StartPeakonetime </td>
+                            <td> @Model.EndPeakonetime </td>
+                            <td> @Model.peack1  </td>
+                        }
+                    </tr>
+                    <tr>
+                        @if (Model.peack2 != -1)
+                        {
+                            <td>II </td>
+                            <td>@Model.StartPeaktwotime</td>
+                            <td>@Model.EndPeaktwotime</td>
+                            <td>@Model.peack2 </td>
+                        }
+                    </tr>
+                    <tr>
+                        @if (Model.peack3 != -1)
+                        {
+                            <td>III</td>
+                            <td>@Model.StartPeakthreetime</td>
+                            <td>@Model.EndPeakthreetime</td>
+                            <td>@Model.peack3 </td>
+                        }
+                    </tr>
+                    <tr> </tr>
+                }
+                @if (Model.loadtype == "1")
+            {
+                    @if (Model.phasenumber == 1)
+                {
+                        <tr>
+                            @if (Model.peack1 != -1)
+                    {
+                                <td> I </td>
+                                <td> @Model.StartPeakonetime </td>
+                                <td> @Model.EndPeakonetime </td>
+                                <td> @Model.peack1 </td>
+                            }
+                        </tr>
+                    }
+                    @if (Model.phasenumber == 2)
+                {
+                        <tr>
+                            @if (Model.peack2 != -1)
+                    {
+                                <td>II </td>
+                                <td>@Model.StartPeaktwotime</td>
+                                <td>@Model.EndPeaktwotime</td>
+                                <td>@Model.peack2 </td>
+                            }
+                        </tr>
+                    }
+                    @if (Model.phasenumber == 3)
+                {
+                        <tr>
+                            @if (Model.peack3 != -1)
+                    {
+                                <td>III</td>
+                                <td>@Model.StartPeakthreetime</td>
+                                <td>@Model.EndPeakthreetime</td>
+                                <td>@Model.peack3 </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>

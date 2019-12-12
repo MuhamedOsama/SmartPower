@@ -1,0 +1,95 @@
+﻿@model IEnumerable<SmartPower.Domin.report.LoadTimeDownRatio>
+
+@{
+    ViewData["Title"] = "loadTimeDownRatio";
+}
+
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">load Time Down Ratio</strong>
+
+    </div>
+    <div class="card-header">
+        <form action="loadTimeDownRatio">     
+            <div style="float:left; padding-left:5%">
+                
+                <select name="Id" class="myform-control" required>
+                    <option selected disabled> select Load</option>
+                    <option value="-1"> All</option>
+                    @foreach (var load in ViewBag.load)
+                    {
+                        <option value="@load.Id">@load.name</option>
+
+                    }
+                </select>
+            </div>
+
+            <div style="float:left; padding-left:5%">
+                <label class="control-label">From</label>
+                <input name="from" type="date" class="myform-control" required/>
+            </div>
+            <div style="float:left; padding-left:5%">
+                <label class="control-label">To</label>
+                <input name="to" type="date" class="myform-control" required/>
+            </div>
+
+                <button type="submit" value="Search" style="background:none; border:none"><i class="fa fa-search"></i> Search</button>
+    </form>
+    </div>
+    <div class="table-stats order-table ov-h">
+        <table id="simple-table" class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Load Id
+                    </th>
+                    <th>
+                        Load Name
+                    </th>
+                    <th>
+                        Total Known Time
+                    </th>
+                    <th>
+                        Total Unkonwn Time
+                    </th>
+                    <th>
+                        Down Time Per Hour
+                    </th>
+                    <th>
+                        Down Time Percentage To Known Time
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var res in Model)
+                {
+                    @if (res.loadId != 0)
+                    {
+                <tr>
+                    <td>
+                        @res.loadId
+                    </td>
+                    <td>
+                        @res.LoadName
+                    </td>
+                    <td>
+                        @res.totalKnownTime
+                    </td>
+                    <td>
+                        @res.totalUnkonwnTime
+                    </td>
+                    <td>
+                        @res.DownTimePerHour
+                    </td>
+                    <td>
+                        @res.DownTimePercentageToKnownTime %
+                    </td>
+                </tr>
+                        }
+                    }             
+                </tbody>
+            </table>
+       
+    </div>
+</div>

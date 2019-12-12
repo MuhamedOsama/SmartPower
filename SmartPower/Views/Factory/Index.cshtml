@@ -1,0 +1,57 @@
+﻿@model SmartPower.Controllers.Domin.FactoryDataModelWithFullData
+
+@{
+    ViewData["Title"] = "Details";
+}
+<div class="card">
+    <div class="card-header">
+        <strong class="card-title">Factories </strong>
+        <a asp-action="Create" style="float:right;"><i class="fa fa-plus-square"></i>  Create New</a>
+    </div>
+    <div class="table-stats order-table ov-h">
+        <table id="simple-table" class="table">
+            <thead>
+                <tr>              
+                    <th></th>
+                    <th>Factory Name</th>
+                    <th>Scale</th>
+                    <th>businessType</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+             @foreach (var item in ViewBag.factories)
+             {
+                    <tr>
+                        
+                     <td></td>
+                        <td class="center">
+                            @item.Name
+                        </td>
+                        <td class="center">
+                            @item.Scale
+                        </td>
+                        <td class="center">
+                            @item.businessType
+                        </td>
+                        <td>
+                            @Html.ActionLink("","Edit", new { Id = item.FacId }, new {
+               @class = "ace-icon fa fa-pencil bigger-120 btn btn-xs btn-info "
+           })
+                            @*@Html.ActionLink("Details", "Details", "PrimarySource", new { Id = item.Id }, new { @class = "btn btn-xs btn-primary " })*@
+                            @Html.ActionLink("", "Delete", new { Id = item.FacId }, new { @class = " ace -icon fa fa-trash-o bigger-120 btn btn-xs btn-danger" })
+                        </td>
+                    </tr>
+
+        }
+            </tbody>
+
+
+
+        </table>
+    </div>
+</div>
+
+    <div>
+
+    </div>

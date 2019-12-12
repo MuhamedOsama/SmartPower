@@ -1,0 +1,183 @@
+﻿@model IEnumerable<SmartPower.Controllers.Domin.LoadDataModel>
+@{
+    ViewData["Title"] = "Index";
+}
+<script>
+    function getSources(phase, facid)
+    {
+        if (phase == 1) {
+            // primary
+
+            getvalidprimary( facid);
+        }
+        else {
+            // secondary
+            getSecodarysourcebyfacid(facid)
+        }
+
+
+    }
+
+    function getvalidprimary(value)
+    {
+  
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetprimarySourcebyfacid", "PrimarySource")",
+                    dataType: "Json",
+                    cache: false,
+                     data: { factoryid: value,},
+                    success: function (data)
+                    {
+                        fillsourcelist(data);
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+                });
+    }
+    function fillsourcelist(data) {
+        var prim = document.getElementById("slctsource");
+        prim.innerHTML  ="<option value=\"-1\"> All</option>"
+        for (i = 0; i < data.length; i++) {
+            var pName = data[i].name;
+            var pId = data[i].id;
+            prim.innerHTML += "<option value='" + pId + "'>" + pName + "</option>";
+
+        }
+    }
+
+
+
+       function getSecodarysourcebyfacid(facid) {
+
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetAllSecondarySourcesbyfacId", "SecoundrySource")",
+            dataType: "Json",
+            cache: false,
+            data: { factoryid: facid },
+            success: function (data) {
+                fillsourcelist(data);
+            },
+
+
+        });
+    }
+
+</script>
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Load</strong>
+
+    </div>
+    <div class="card-header">        
+           <form asp-action="Index">
+
+                 
+                         <select name="facid" id="fac" class="myform-control">
+                                    <option value="-1" disabled selected> Factory</option>
+                                    @foreach (var factory in ViewBag.factories)
+                                {
+                                <option value="@factory.FacId">@factory.Name</option>
+
+                                }
+                         </select>
+                         <select id="selectionsource" class="myform-control" onchange="getSources(this.value, fac.value)" name="PrimOrSec">
+                                    <option selected disabled> Source</option>
+                                    <option value="1"> Primary Source</option>
+                                    <option value="2"> Secondary Source</option>
+                         </select>
+                         <select id="slctsource" name="sourceid" class="myform-control">
+                                    <option value="-1" disabled selected> Choose Source</option>
+                           </select>
+                         <button value="Search" type="submit" style="background:none;  border:none"><i class="fa fa-search"></i> Search</button>
+                         <a asp-action="homecreate" style="float:right;"><i class="fa fa-plus-square"></i>  Create New</a>
+                    
+                </form>
+     </div>
+    <div class="table-stats order-table ov-h">
+
+        <table id="simple-table" class="table-Responsive">
+            <thead>
+                <tr>
+                    <th >Code</th>
+                    <th>Load Name</th>
+                    <th >Factory Name</th>
+                    <th >Source Type</th>
+                    <th >Source Name</th>
+                    <th >Type</th>
+                    <th >Connection </th>
+                    <th >Function</th>
+                    <th >Load Type</th>
+                    <th >PowerFactor</th>
+                    <th >RatingCurrent</th>
+                    <th >RatingTemp</th>
+                    <th >RatingVoltage</th>
+                    <th ></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.code)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.fac_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PrimOrSec)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sourceName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    @if (item.Connection != null)
+                    {
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Connection)
+                        </td>
+                    }
+                    else{
+                    <td>
+                        ---
+                    </td>
+                    }
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Function)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PhaseType)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PowerFactor)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RatingCurrent)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RatingTemp)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RatingVoltage)
+                    </td>
+                    <td>
+                        @Html.ActionLink("", "Edit", new { Id = item.Id }, new { @class = "ace-icon fa fa-pencil bigger-120 btn btn-xs btn-info " })
+                        @Html.ActionLink("", "Delete", new { Id = item.Id }, new { @class = " ace -icon fa fa-trash-o bigger-120 btn btn-xs btn-danger " })
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+ 

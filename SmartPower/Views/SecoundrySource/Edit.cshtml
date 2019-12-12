@@ -1,0 +1,166 @@
+﻿@model SmartPower.Controllers.Domin.SecoundrySouresDataModelSim
+
+@{
+    ViewData["Title"] = "Create";
+}
+<script>
+
+    var checkprimary = 0;
+    function changeNode(value)
+    {
+        if (value == "1") {
+            var select = document.getElementById("3N");
+            document.getElementById("1N").style.display = "block";
+            select.style.display = "none";
+        }
+        else {
+            document.getElementById("1N").style.display = "block";
+            var select = document.getElementById("3N");
+            select.style.display = "block";
+        }
+    }
+
+    function empty()
+    {
+        var slct = document.getElementById("slcttype");
+        slct.style.display = "block";
+
+        var list = document.getElementById("1phase");
+        if (checkprimary == 1) {
+            var x = document.getElementById("fac").value;
+            var x2 = document.getElementById("selectiontype").value;
+            getValidPrimary(x2, x);
+        }
+    }
+
+    function fillPrimayList(data)
+    {
+         var list = document.getElementById("1phase");
+        list.innerHTML = "";
+        list.innerHTML = "<option selected disabled>Select</option>";
+        for (i = 0; i < data.length; i++) {
+            var pName = data[i].name;
+            var pId = data[i].code;
+            list.innerHTML += "<option value='" + pId + "'>" + pName + "</option>";
+        }
+    }
+
+    function fillNodes(data)
+    {
+        var x = document.getElementById("n1");
+        var x2 = document.getElementById("n2");
+        var x3 = document.getElementById("n3");
+        x.innerHTML = "";
+        x2.innerHTML = "";
+        x3.innerHTML = "";
+
+        if (data.dN1 == "-1") {
+            x.innerHTML  += "<option  value='1'>Node 1</option>";
+            x2.innerHTML += "<option  value='1'>Node 1</option>";
+            x3.innerHTML += "<option  value='1'>Node 1</option>";
+        }
+        if (data.dN2 == "-1") {
+             x.innerHTML += "<option  value='2'>Node 2</option>";
+            x2.innerHTML += "<option  value='2'>Node 2</option>";
+            x3.innerHTML += "<option  value='2'>Node 2</option>";
+        }
+        if (data.dN3 == "-1") {
+            x.innerHTML  += "<option  value='3'>Node 3</option>";
+            x2.innerHTML += "<option  value='3'>Node 3</option>";
+            x3.innerHTML += "<option  value='3'>Node 3</option>";
+        }
+    }
+
+    function getValidPrimary(value, factoryId)
+    {
+        document.getElementById("slctprim").style.display = "block";
+        checkprimary = 1;
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetValidPrimarySource", "PhaseConnection")",
+                    dataType: "Json",
+                    cache: false,
+                    data: { type: value, factoryid:factoryId},
+                    success: function (data)
+                    {
+                        fillPrimayList(data);
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+                });
+    }
+
+      function getValidNode(value) {
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetValidNodes", "PhaseConnection")",
+                    dataType: "Json",
+                    cache: false,
+                    data: { id: value,},
+                    success: function (data)
+                    {
+                        console.log(data);
+                        fillNodes(data);
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+                });
+        }
+</script>
+
+<div class="card" style="width:50%;">
+    <div class="card-header"><strong>Secondary</strong><small> Configuration</small> </div>
+    <div class="card-header">
+        <form asp-action="Edit" class=" conform  ">
+            <h5> Edit @Model.Name </h5>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group  ">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DesignValue" class="control-label"></label>
+                <input asp-for="DesignValue" class="form-control" />
+                <span asp-validation-for="DesignValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxCurrent" class="control-label"></label>
+                <input asp-for="MaxCurrent" class="form-control" />
+                <span asp-validation-for="MaxCurrent" class="text-danger"></span>
+            </div>
+
+            @if(Model.Type == "3")
+            {
+            <div class="form-group">
+                <label asp-for="Topology" class="control-label"></label>
+                <select asp-for="Topology" class="form-control">
+                    <option value="Star"> Star </option>
+                    <option value="Delta"> Delta</option>
+                </select>
+            </div>
+            }
+
+            <input asp-for="FacId" value="@Model.FacId" hidden />
+            <input asp-for="Type" value="@Model.Type" hidden />
+            <input asp-for="PS_Id" value="@Model.PS_Id" hidden />
+            <input asp-for="Id" value="@Model.Id" hidden />
+            <input asp-for="Code" value="@Model.Code" hidden />
+
+            <input type="submit" value="Save" class="btn btn-info btn-md"/>
+            <a asp-action="Index" class="btn btn-info btn-md"> Cancel</a>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+

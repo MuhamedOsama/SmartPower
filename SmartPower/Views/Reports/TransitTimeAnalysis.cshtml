@@ -1,0 +1,135 @@
+﻿@model SmartPower.Domin.report.TransitTimeViewModel
+
+@{
+    ViewData["Title"] = "Transit Time Analysis";
+}
+
+
+
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Transit Time Analysis</strong>
+    </div>
+    <div class="card-header">
+        <form action="TransitTimeAnalysis">
+
+   
+
+                        <select name="LoadId" class="myform-control">
+                            <option disabled selected>Select Load</option>
+                            @foreach (var load in ViewBag.load)
+                            {
+                                <option value="@load.Id">@load.name</option>
+
+                            }
+                        </select>
+
+                     <label >Levels</label>
+                        <input name="N" type="number"   min="0"class="myform-control" />
+                     <label >Day</label>
+                        <input name="day" type="date" class="myform-control"/>
+                    <button type="submit" value="Search" style="background:none;border:none"><i class="fa fa-search"></i> Search</button>
+        </form>
+    </div>
+    <div class="table-stats order-table ov-h">
+
+        <table id="simple-table" class="table  ">
+            <thead>
+                <tr>
+                    <th >
+                        Current
+                    </th>
+                    @if(Model.precentages1.Count() != 0)
+                {
+                <th>
+                    First Phase
+                </th>
+                }
+                    @if(Model.precentages2.Count() != 0 )
+                {
+                <th>
+                    Second Phase
+                </th>
+                }
+                    @if(Model.precentages3.Count() != 0)
+                {
+                <th>
+                    Third Phase
+                </th>
+                }
+
+
+                </tr>
+            </thead>
+            <tbody>
+
+           @for (int i = 0; i < Model.parts.Count(); i++)
+            {
+                if (i + 1 != Model.parts.Count())
+                {
+            <tr>
+                <td class="center">
+                    <p>@Model.parts[i].ToString("0.00") - @Model.parts[i + 1].ToString("0.00") </p>
+                </td>
+                @if (Model.precentages1.Count != 0)
+                        {
+                        <td class="center">
+
+                            <section>
+                                <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="circle-chart__background" stroke="#efefef" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                                    <circle class="circle-chart__circle" stroke="#00acc1" stroke-width="2" stroke-dasharray="@Model.precentages1[i+1],100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                                    <g class="circle-chart__info">
+                                        <text class="circle-chart__percent" x="16.91549431" y="15.5" alignment-baseline="central" text-anchor="middle" font-size="8">@Model.precentages1[i+1].ToString("0.00")%</text>
+                                        <text class="circle-chart__subline" x="16.91549431" y="20.5" alignment-baseline="central" text-anchor="middle" font-size="2">@Model.times1[i+1].ToString("0.00") Minutes</text>
+                                    </g>
+                                </svg>
+                            </section>
+                        </td>
+                        }
+                @if(Model.precentages2.Count  != 0 )
+                        {
+                        <td class="center">
+
+
+                            <section>
+                                <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="circle-chart__background" stroke="#efefef" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                                    <circle class="circle-chart__circle" stroke="#00acc1" stroke-width="2" stroke-dasharray="@Model.precentages2[i+1],100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                                    <g class="circle-chart__info">
+                                        <text class="circle-chart__percent" x="16.91549431" y="15.5" alignment-baseline="central" text-anchor="middle" font-size="8">@Model.precentages2[i + 1].ToString("0.00") %</text>
+                                        <text class="circle-chart__subline" x="16.91549431" y="20.5" alignment-baseline="central" text-anchor="middle" font-size="2">@Model.times2[i + 1].ToString("0.00") Minutes</text>
+                                    </g>
+                                </svg>
+                            </section>
+                        </td>
+                        }
+                @if (Model.precentages3.Count != 0)
+                        {
+                        <td class="center">
+
+                            <section>
+                                <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+                                    <circle class="circle-chart__background" stroke="#efefef" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                                    <circle class="circle-chart__circle" stroke="#00acc1" stroke-width="2" stroke-dasharray="@Model.precentages3[i+1],100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                                    <g class="circle-chart__info">
+                                        <text class="circle-chart__percent" x="16.91549431" y="15.5" alignment-baseline="central" text-anchor="middle" font-size="8">@Model.precentages3[i + 1].ToString("0.00")%</text>
+                                        <text class="circle-chart__subline" x="16.91549431" y="20.5" alignment-baseline="central" text-anchor="middle" font-size="2">@Model.times3[i + 1].ToString("0.00") Minutes</text>
+                                    </g>
+                                </svg>
+                            </section>
+                        </td>
+                        }
+            </tr>
+
+                }
+
+
+            }
+
+
+
+            </tbody>
+        </table>
+    </div>
+</div>

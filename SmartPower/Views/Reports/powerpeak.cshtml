@@ -1,0 +1,167 @@
+﻿@model  SmartPower.Domin.PowerPeakViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<script> 
+    function slctsource(value)
+    {
+ 
+        var n = document.getElementById("slct"); 
+        if (value == 1)
+        {
+
+            document.getElementById("prim").style.display = "block";
+            document.getElementById("load").style.display = "none";
+            document.getElementById("prim").required = true;           
+            document.getElementById("load").required = false;           
+
+
+        }
+        else {
+
+            document.getElementById("prim").style.display = "none";
+            document.getElementById("load").style.display = "block";
+            document.getElementById("load").required = true;           
+            document.getElementById("prim").required = false;           
+
+
+        }
+        
+    }
+ 
+</script>
+
+<div class="table-header">
+    <h2 class="hh2"></h2>
+
+</div>
+
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Power Peak</strong>
+    </div>
+    <div class="card-header">
+        <form action="powerpeak">             
+                       <select name="Type" id="slct" class="myform-control" onchange="slctsource(this.value)">
+                            <option disabled selected> Select Source</option>
+                            <option value="1"> Primary</option>
+                            <option value="2"> Load</option>
+                        </select>
+                      <select name="primId" id="prim" class="myform-control" style="display:none"> 
+                            <option disabled > Select Primary</option>
+                            @foreach (var primary in ViewBag.Primary)
+                            {
+                                <option value="@primary.Code">@primary.Name</option>
+
+                            }
+                        </select>
+                    
+                     <select name="loadId" id="load" class="myform-control" style="display:none" >
+                            <option disabled > Select load</option>
+                            @foreach (var loads in ViewBag.loads)
+                            {
+                                <option value="@loads.Id">@loads.name</option>
+
+                            }
+                        </select>
+                    
+                    <button type="submit" value="Search" style="background:none;border:none"><i class="fa fa-search"></i>   Search</button>
+        </form>
+    </div>
+    <div>
+           <p> Power Peak of @Model.name </p>
+   </div>
+    <div class="table-stats order-table ov-h">
+        <table id="simple-table" class="table ">
+            <thead>
+                <tr>
+                    <th>
+                        Phase
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Peak power Value
+                    </th>
+                    <th></th>
+          
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.loadtype == "-1" || Model.loadtype == "3")
+            {
+            <tr>
+                @if (Model.dateP1.Year != 0001)
+                    {
+                    <td>Phase One </td>
+                    <td> @Model.dateP1 </td>
+                    <td> @Model.peakP1 (KW) </td>
+                    <td></td>
+                    }
+            </tr>
+            <tr>
+                @if (Model.dateP1.Year != 0001)
+                    {
+                <td>Phase Two </td>
+                    <td>@Model.dateP2</td>
+                    <td>@Model.peakP2 (KW)</td>
+                    <td></td>
+                }
+            </tr>
+            <tr>
+                @if(Model.dateP1.Year != 0001)
+                    {
+                    <td>Phase Three</td>
+                    <td>@Model.dateP3</td>
+                    <td>@Model.peakP3 (KW)</td>
+                    <td></td>
+                }
+            </tr>           
+            }
+           @if (Model.loadtype == "1")
+            {
+            @if (Model.phasenumber == 1)
+                {
+            <tr>
+                @if (Model.dateP1.Year != 0001)
+                        {
+                <td>Phase One </td>
+                        <td> @Model.dateP1 </td>
+                        <td> @Model.peakP1 (KW)</td>
+                        <td></td>
+                }
+            </tr>
+                }
+            @if (Model.phasenumber == 2)
+                {
+            <tr>
+        @if (Model.dateP2.Year != 0001)
+                {
+                <td>Phase Two </td>
+                <td> @Model.dateP2 </td>
+                <td> @Model.peakP2 (KW)</td>
+                <td></td>
+                }
+            </tr>
+                }
+            @if (Model.phasenumber == 3)
+                {
+            <tr>
+                @if (Model.dateP3.Year != 0001)
+                        {
+                <td>Phase Three </td>
+                        <td> @Model.dateP3 </td>
+                        <td> @Model.peakP3 (KW)</td>
+                        <td></td>
+                }
+            </tr>
+                }
+            }
+              
+            </tbody>
+        </table>
+   </div>
+    </div>

@@ -1,0 +1,56 @@
+﻿@model SmartPower.Controllers.Domin.PrimarySourceDataModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<div class="card" style="width:50%;" >
+    <div class="card-header"><strong>Primary Source</strong><small>   Configuration</small> </div>
+    <div class="card-body card-block">
+        <form asp-action="Edit" class="conform ">
+            <h5> Edit @Model.Name </h5>
+
+            <input asp-for="Id" value="@Model.Id" hidden/>
+            <input asp-for="FacId" value="@Model.FacId" hidden />
+            <input asp-for="Type" value="@Model.Type" hidden />
+            <input asp-for="Code" value="@Model.Code" hidden />
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DesignValue" class="control-label"> Max Voltage</label>
+                <input asp-for="DesignValue" class="form-control" placeholder="Max Voltage" />
+                <span asp-validation-for="DesignValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxCurrent" class="control-label"></label>
+                <input asp-for="MaxCurrent" class="form-control" placeholder="Max Current" />
+                <span asp-validation-for="MaxCurrent" class="text-danger"></span>
+            </div>
+            @if (Model.Type == "3")
+            {
+                <div class="form-group" id="topology">
+                    <label asp-for="Topology" class="control-label"></label>
+                    <select asp-for="Topology" class=" form-control">
+                        <option selected disabled>Topology</option>
+                        <option value="Star"> Star </option>
+                        <option value="Delta"> Delta</option>
+
+                    </select>
+                </div>
+            }
+           
+                <button type="submit" value="Save" class="btn btn-info btn-md"> Save</button>
+                <a asp-action="Index" class="btn btn-info btn-md"> Cancel</a>        
+        </form>
+
+    </div>
+    </div>
+<div>
+    
+</div>
+

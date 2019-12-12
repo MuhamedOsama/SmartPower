@@ -1,0 +1,78 @@
+﻿@model SmartPower.Controllers.Domin.FactoryDataModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    function disp(value)
+    {
+        var x = document.getElementById("busiother");
+
+        if (value == -1) {
+            x.style.display = "block";
+            document.getElementById("inp").required = true;           
+        }
+        else {
+
+            x.style.display = "none";
+            document.getElementById("inp").required = false;
+
+        }
+    }
+
+</script>
+
+
+<div class="card" style="width:50%;">
+    <div class="card-header"><strong>Create</strong><small> Factory</small></div>
+    <div class="card-body card-block">
+        <div>
+            <form asp-controller="factory" asp-action="Create" class="conform">
+
+                <div class="form-group row">
+                    <lable class="col-sm-4 col-form-label"> Factory Name </lable> <br />
+                    <input asp-for="Name" class="form-control col-sm-8" placeholder="Name" required />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <lable class="col-sm-4 col-form-label">  Scale </lable> <br />
+                    <select class="form-control col-sm-8" asp-for="Scale">
+                        <option value="Less Than 10M">Less Than 10M </option>
+                        <option value="More Than 10M">More Than 10M </option>
+                        <option value="Less Than 100M">Less Than 100M </option>
+                        <option value="More Than 100M">More Than 100M </option>
+                    </select>
+                    <span asp-validation-for="Scale" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label"> Business Type</label>
+                    <select asp-for="businessType" class="form-control col-sm-8" onchange="disp(this.value)" required>
+                        <option value="" disabled selected> Select Business Type</option>
+                        @foreach (var i in ViewBag.Business)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                        <option value="-1">Other..</option>
+
+                    </select>
+
+                </div>
+                <div  align="right" class="form-group row" style="display:none" id="busiother">
+                    <lable class="col-sm-4 col-form-label">  </lable> 
+                    <input asp-for="businessTypeOthers" class="form-control col-sm-8" placeholder="Business Type" id="inp" />
+                    <span asp-validation-for="businessType" class="text-danger"></span>
+                </div>
+                <button type="submit" value="Create" class="btn btn-info btn-md">Create</button>
+                <a asp-action="Index" class="btn btn-info btn-md"> Cancel</a>
+            </form>
+        </div>
+     </div>
+</div>
+
+
+

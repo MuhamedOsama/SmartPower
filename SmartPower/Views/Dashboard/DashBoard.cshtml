@@ -1,0 +1,326 @@
+﻿@model SmartPower.Domin.DashboardViewModel
+@{
+
+    ViewData["Title"] = "DashBoard";
+}
+<h2>Primaries DashBoard</h2>
+
+
+
+
+<link href="~/assets/plugins/nvd3/nv.d3.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/css/components.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="~/assets/css/cs-skin-elastic.css">
+<link rel="stylesheet" href="~/assets/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel="stylesheet" href="~/dashboard/style.css">
+<link rel="stylesheet" href="~/dashboard/cloudCustome.css">
+
+
+
+
+
+<script>
+    var alldata; 
+
+/* BEGIN EXTERNAL SOURCE */
+
+    setInterval( function SourcesDetails()
+    {
+        var fac = document.getElementById("factory").value;
+        var dat = document.getElementById("datetime").value;
+            $.ajax({
+                type: "Get",
+                url: "@Url.Action("DashBoard2", "DashBoard")",
+                dataType: "Json",
+                cache: false,
+                data: { date: dat, fac_id: fac },
+                success: function (data)
+                {
+
+                    fillsourcesdata(data);
+                }
+            });
+    }, 10000);
+    function fillsourcesdata(data)
+    {
+        if (data === alldata) return; 
+        var activeLoadsCount = document.getElementById("activeLoadsCount");
+        activeLoadsCount.innerHTML = "";
+        activeLoadsCount.innerHTML = data.countOfActiveLoads;
+
+        var lifeLoadsCount = document.getElementById("lifeLoadsCount");
+        lifeLoadsCount.innerHTML = "";
+        lifeLoadsCount.innerHTML = data.coutOfLifeLoads;
+
+        var prim = document.getElementById("primar");
+        prim.innerHTML = "";
+        //var load = document.getElementById("loads");
+       // load.innerHTML = "";
+        var act = document.getElementById("activeandlife");
+        act.innerHTML = "";
+        var i = 0; 
+
+
+        for (var key in data.primaries)
+        {    
+                 prim.innerHTML +=
+                "<div class=\"col-sm-12\">" +
+                "<div class=\"card-box\">" +
+                "<h4 class=\" m-t-0 m-b-20 header-title \">" +
+                "<b>" + data.primaries[key].name + "</b></h4>" +
+
+                "<div class=\"widget-chart text-center\">"+
+                "<ul class=\"list-inline m-t-15\">"+
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">Current 1</h5>"+
+                "<h4 class=\"m-b-0\">" + data.primaries[key].current1 +"</h4>"+
+                "</li>" +
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">Current 2</h5>" +
+                "<h4 class=\"m-b-0\">" + data.primaries[key].current2 + "</h4>"+
+                "</li>" +
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">Current 3</h5>" +
+                "<h4 class=\"m-b-0\">" + data.primaries[key].current3 + "</h4>"+
+                "</li>" +
+                "</ul>" +
+
+                "<ul class=\"list-inline m-t-15\">" +
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">voltage 1</h5>" +
+                "<h4 class=\"m-b-0\">" + data.primaries[key].voltage1 + "</h4>" +
+                "</li>" +
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">Voltage 2</h5>" +
+                "<h4 class=\"m-b-0\">" + data.primaries[key].voltage2 + "</h4>" +
+                "</li>" +
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">Voltage 3</h5>" +
+                "<h4 class=\"m-b-0\">" + data.primaries[key].voltage3 + "</h4>" +
+                "</li>" +
+                "</ul>" +
+
+
+                "<ul class=\"list-inline m-t-15\">" +
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">Power 1</h5>" +
+                "<h4 class=\"m-b-0\">" + data.primaries[key].power1 + "</h4>" +
+                "</li>" +
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">Power 2</h5>" +
+                "<h4 class=\"m-b-0\">" + data.primaries[key].power2 + "</h4>" +
+                "</li>" +
+                "<li>" +
+                "<h5 class=\"text-muted m-t-20\">Power 3</h5>" +
+                "<h4 class=\"m-b-0\">" + data.primaries[key].power3 + "</h4>" +
+                "</li>" +
+                "</ul>" +
+                "</div>" +
+                " <div  id='chartContainer" + data.primaries[key].name + "' style='height:300px ; width:100%'>hello  </div>"+
+
+                "</div>"+
+                "</div>";
+         
+        }
+        for (var key in data.primaries)
+        {
+            var chart = new CanvasJS.Chart("chartContainer" + data.primaries[key].name, {
+                animationEnabled: true,
+                theme: "light2",
+                title: {
+                    //text: " Chart Of " + data.primaries[key].name
+                },
+                axisY: {
+                    includeZero: false
+                },
+                data: [{
+                    type: "column",
+                    dataPoints: [
+                        { label: " Cr Phase 1", y: data.primaries[key].current1 },
+                        { label: "Cr Phase 2", y: data.primaries[key].current2 },
+                        { label: "Cr Phase 3", y: data.primaries[key].current3, },
+
+                    ]
+                },
+                {
+                    type: "column",
+                    dataPoints: [
+                        { label: "Volt Phase 1", y: data.primaries[key].voltage1 },
+                        { label: "Volt Phase 2", y: data.primaries[key].voltage2 },
+                        { label: "Volt Phase 3", y: data.primaries[key].voltage3, },
+                    ]
+                },
+                {
+                    type: "column",
+                    dataPoints: [
+                        { label: "po Phase 1", y: data.primaries[key].power1 },
+                        { label: "po Phase 2", y: data.primaries[key].power2 },
+                        { label: "po Phase 3", y: data.primaries[key].power3, },
+
+                    ]
+                },
+                {
+                    type: "column",
+                    dataPoints: [
+                        { label: " Phase 1" },
+                        { label: " Phase 2" },
+                        { label: " Phase 3", },
+
+                    ]
+                }
+                ]
+            });
+            chart.render()
+        }
+   
+      
+    }
+    function loaddetail(id)
+    {
+    
+
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetLoadDetails", "DashBoard")",
+            dataType: "Json",
+            cache: false,
+            data: { Id: id },
+            success: function (data) {
+                fillloaddate(data);
+            },
+            error: function (data) {
+                alert("error");
+            },
+        });
+    }
+
+    function fillloaddate(data)
+    {
+        var ld = document.getElementById("details");
+
+
+        ld.innerHTML = "Name : " + data.name + "<br>" ;
+        ld.innerHTML += "Factory Name: " + data.fac_name + "<br>";
+      //ld.innerHTML += "Type" + data.PrimOrSec+ "";
+        ld.innerHTML += "Source Name : " + data.sourceName + "<br>";
+        ld.innerHTML += "Type : " + data.type + "<br>";
+        ld.innerHTML += "Connection : " + data.connection+ "<br>";
+        ld.innerHTML += "Function : " + data.function+ "<br>";
+        ld.innerHTML += "PhaseType : " + data.phaseType+ "<br>";
+        ld.innerHTML += "PowerFactor : " + data.powerFactor+ "<br>";
+        ld.innerHTML += "RatingCurrent : " + data.ratingCurrent+ "<br>";
+        ld.innerHTML += "RatingTemp : " + data.ratingTemp+ "<br>";
+        ld.innerHTML += "RatingVoltage : " + data.ratingVoltage+ "<br><hr>";
+
+    }
+
+
+   
+
+</script>
+
+<div>
+    <div class="row form-group">
+        <div class="col-lg-3"></div>
+        <form class="col-lg-8" asp-action="DashBoard2">
+            <input class="form-control col-lg-4" type="date" name="date" id="datetime" asp-for="@Model.datetime" style="height: calc(3.25rem + 5px);" onchange="SourcesDetails()">
+            <div class="col-lg-3" style="float:left">
+                <select name="fac_id" id="factory" class="form-control" style="height: calc(3.25rem + 5px);">
+                    @foreach (var factory in ViewBag.factories)
+                    {
+                        <option value="@factory.FacId">@factory.Name</option>
+
+                    }
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <!-- Widgets -->
+    <div class="row">
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="stat-widget-five">
+                        <div class="stat-icon dib flat-color-1">
+                            <i class="ti-stats-up text-muted" style="font-size:39px"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="text-left dib">
+                                <div class="stat-text"><span class="count" id="activeLoadsCount"></span></div>
+                                <div class="stat-heading">Loads Count</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="stat-widget-five">
+                        <div class="stat-icon dib flat-color-2">
+                            <i class="ti-pulse text-muted"  style="    font-size: 39px;"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="text-left dib">
+                                <div class="stat-text"><span class="count" id="lifeLoadsCount"></span></div>
+                                <div class="stat-heading">Active Loads</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+
+    @* primary*@
+    <div class="row" id="primar">
+
+
+
+    </div>
+
+    @*<div id="loads">
+
+        </div>*@
+
+
+    @*loads*@
+
+
+</div>
+
+<div>
+
+
+
+
+
+   
+    <div id="details">
+
+    </div>
+
+    <div id="activeandlife">
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<script src="~/dashboard/chartist.min.js"></script>
+<script src="~/dashboard/2.2.js"></script>
+<script src='~/dashboard/zwvrok.js'></script>
+<script src="~/dashboard/index.js"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>

@@ -1,0 +1,203 @@
+﻿@model SmartPower.Domin.Report.RushHourViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<script>
+    function slctsource(value) {
+        var n = document.getElementById("slct");
+        if (value == 1) {
+            document.getElementById("prim").style.display = "block";
+            document.getElementById("load").style.display = "none";
+
+        }
+        else {
+            document.getElementById("prim").style.display = "none";
+            document.getElementById("load").style.display = "block";
+
+        }
+
+    }
+
+</script>
+
+
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Harmonics Order</strong>
+
+    </div>
+    <div class="card-header">
+        <form action="HarmonicOrder">
+
+
+
+            <select name="loadId" id="load" class="myform-control">
+                <option disabled selected> Select Load</option>
+                @foreach (var loads in ViewBag.loads)
+                {
+                    <option value="@loads.Id">@loads.name</option>
+                }
+            </select>
+            <select name="HarmOrder" class="myform-control" required>
+                <option disabled selected> Select Harmonic</option>
+                <option value="3"> Three</option>
+                <option value="5"> Five</option>
+                <option value="7"> Seven</option>
+                <option value="9"> Nine</option>
+            </select>
+            <input name="date" type="date" required class="myform-control" />
+            <button type="submit" value="Search" style="background:none;border:none"><i class="fa fa-search"></i>  Search</button>
+
+
+
+
+
+
+
+        </form>
+    </div>
+
+
+    @if (ViewBag.LoadName != null)
+    {
+        <div>     @ViewBag.LoadName</div>
+    }
+    <div class="table-stats order-table ov-h">
+
+        <table id="simple-table" class="table ">
+            <thead>
+                <tr>
+                    <th>
+                        Phase
+                    </th>
+
+                    <th>
+                        Start Time
+                    </th>
+                    <th>
+                        End Time
+                    </th>
+                    <th>
+                        Peak Harmonic Value
+                    </th>
+                    <th>
+                       Variance Value
+                    </th>
+                    <th>
+                        Standard Deviation Value
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.loadtype == "3")
+                {
+                    <tr>
+                        @if (Model.peack1 != -1)
+                        {
+                            <td> I </td>
+                            <td> @Model.StartPeakonetime </td>
+                            <td> @Model.EndPeakonetime </td>
+                            <td>   @Model.peack1 % </td>
+                            <td> @Model.Variance1  </td>
+
+                            <td> @Model.Standard1 </td>
+
+                            <td>  </td>
+                        }
+                    </tr>
+                    <tr>
+                        @if (Model.peack2 != -1)
+                        {
+                            <td>II </td>
+                            <td>@Model.StartPeaktwotime</td>
+                            <td>@Model.EndPeaktwotime</td>
+                            <td>   @Model.peack2 %</td>
+                            <td> @Model.Variance2  </td>
+
+                            <td> @Model.Standard2 </td>
+                            <td>  </td>
+
+                        }
+                    </tr>
+                    <tr>
+                        @if (Model.peack3 != -1)
+                        {
+                            <td>III</td>
+                            <td>@Model.StartPeakthreetime</td>
+                            <td>@Model.EndPeakthreetime</td>
+                            <td>   @Model.peack3 %</td>
+                            <td> @Model.Variance3  </td>
+
+                            <td> @Model.Standard3 </td>
+
+                            <td>  </td>
+
+                        }
+                    </tr>
+                    <tr> </tr>
+                }
+                @if (Model.loadtype == "1")
+                {
+                    @if (Model.phasenumber == 1)
+                    {
+                    <tr>
+                        @if (Model.peack1 != -1)
+                        {
+                            <td> I </td>
+                            <td> @Model.StartPeakonetime </td>
+                            <td> @Model.EndPeakonetime </td>
+                            <td>    @Model.peack1 %</td>
+                            <td> @Model.Variance1  </td>
+
+                            <td> @Model.Standard1 </td>
+
+                            <td>  </td>
+
+                        }
+                    </tr>
+                    }
+                    @if (Model.phasenumber == 2)
+                    {
+                    <tr>
+                        @if (Model.peack2 != -1)
+                        {
+                            <td>II </td>
+                            <td>@Model.StartPeaktwotime</td>
+                            <td>@Model.EndPeaktwotime</td>
+                            <td>   @Model.peack2 %</td>
+                            <td> @Model.Variance2  </td>
+
+                            <td> @Model.Standard2 </td>
+
+                            <td>  </td>
+
+                        }
+                    </tr>
+                    }
+                    @if (Model.phasenumber == 3)
+                    {
+                    <tr>
+                        @if (Model.peack3 != -1)
+                        {
+                            <td>III</td>
+                            <td>@Model.StartPeakthreetime</td>
+                            <td>@Model.EndPeakthreetime</td>
+                            <td>   @Model.peack3 %</td>
+                            <td> @Model.Variance3  </td>
+
+                            <td> @Model.Standard3 </td>
+
+                            <td>  </td>
+
+                        }
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>

@@ -1,0 +1,486 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using SmartPower.DataContext;
+using SmartPower.Services;
+using SmartPower.Domin.Report;
+using SmartPower.Domin;
+using SmartPower.Domin.report;
+using SmartPower.Models;
+
+namespace SmartPower.Controllers
+{
+    public class ReportsController : Controller
+    {
+        private readonly PowerDbContext _Context;
+        private readonly ReportService ReportService;
+
+        public ReportsController(PowerDbContext _Context )
+        {
+            this._Context = _Context;
+            ReportService = new ReportService(_Context);
+        }
+
+        public IActionResult Index()
+        {
+            var ViewModel = ReportService.AvgCalculaion();
+
+            return View(ViewModel);
+        }
+        public IActionResult BalanceRetio()
+        {
+            var viewModel = ReportService.CalculateBalanceRetio();
+            return View(viewModel);
+        }
+        public IActionResult SpikeLogs()
+        {
+            var viewModel = ReportService.getAllSpikes();
+            return View(viewModel);
+
+        }
+
+
+        // ADEL
+        public IActionResult LoadTimeDownRatio( DateTime from , DateTime to , int Id = -1)
+        {
+            ViewBag.load = _Context.Load;
+
+            List<LoadTimeDownRatio> model = new List<LoadTimeDownRatio>();
+            ReportService rs = new ReportService(_Context); 
+            if(Id == -1)
+            {
+                var loads = _Context.Load.ToList();  
+                foreach(var ld in loads)               
+                    model.Add(rs.LoadTimeDownRatio(ld.Id, from, to));                
+            }
+            else
+            {
+              model.Add(rs.LoadTimeDownRatio(Id, from, to));
+            }
+            return View(model);
+        }
+        public IActionResult TransitTimeAnalysis( int N, DateTime day, int LoadId = -1)
+        {
+            ViewBag.load = _Context.Load;
+            var model = new ReportService(_Context).TransitTimeAnalysis(LoadId, N, day);
+            return View(model);
+        }
+          //ABDO
+        public IActionResult powerpeak(int primId, int loadId, int type = -1) //type 1 -> prim , 2 -> load
+        {
+            ReportService rs = new ReportService(_Context);
+            PrimarySourceSerivce ps = new PrimarySourceSerivce(_Context);
+            ViewBag.Primary = ps.GetAllPrimarySources();
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.loads = ls.GetAllLoads();
+            PowerPeakViewModel res = new PowerPeakViewModel();
+
+            if (type == 1)
+            {
+                res = rs.PowerPeakBySourceID(primId, type);
+            }
+            else if (type == 2)
+            {
+                res = rs.PowerPeakBySourceID(loadId, type);
+
+            }
+
+            return View(res);
+        }
+
+        public IActionResult RushHour(DateTime date, int loadId = -1)
+        {
+
+            RushHourViewModel res = new RushHourViewModel();
+            ReportService rs = new ReportService(_Context);
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.loads = ls.GetAllLoads();
+            if (loadId != -1)
+            {
+                res = rs.RushHourForLoadById(loadId, date);
+                ViewBag.LoadName = (ls.GetLoadById(loadId)).name;
+            }
+            return View(res);
+        }
+
+        public IActionResult HarmonicOrder(DateTime date, int HarmOrder = -1, int loadId = -1)
+        {
+
+            RushHourViewModel res = new RushHourViewModel();
+            ReportService rs = new ReportService(_Context);
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.loads = ls.GetAllLoads();
+            if (HarmOrder != -1)
+            {
+                res = rs.HaemonicOrderForLoadId(loadId, date, HarmOrder);
+                ViewBag.LoadName = (ls.GetLoadById(loadId)).name;
+            }
+            return View(res);
+        }
+
+        public IActionResult Production(DateTime fromdate , DateTime todate, int Id = -1) // 1 -> for primaries
+        {
+            ReportService ps = new ReportService(_Context);
+            FactoryService fs = new FactoryService(_Context);
+            ViewBag.factories = fs.GetAllFactoriesSimple();
+           List<ProductionViewModel> res = new List<ProductionViewModel>();
+            if (Id != -1)
+            {
+                res = ps.ProductionReport(fromdate, todate, Id,1);
+            }
+            return View(res);
+        }
+
+        public IActionResult EnergyConsumed()
+        {
+            FactoryService fs = new FactoryService(_Context);
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.factories = fs.GetAllFactoriesSimple();
+            ViewBag.loads = ls.GetAllLoads();
+            ViewBag.functions = ls.GetAllFunctions();
+            return View();
+        }
+
+
+        public List<EnergyC> EnergyConsumedAjax(int id, int sort, string val, DateTime datefrom, DateTime dateto)  
+        {
+            List<EnergyC> res = new List<EnergyC>();
+            List<EnergyC> results = new List<EnergyC>();
+
+            FactoryService fs = new FactoryService(_Context);
+       
+            LoadsServices ls = new LoadsServices(_Context);
+            ReportService rs = new ReportService(_Context);
+
+            var i = 0;
+            ViewBag.functions = ls.GetAllFunctions();
+            if (sort == 1)
+            {
+                while (datefrom != dateto.AddDays(1))
+                {
+                    res =rs.GetEnergies(id, sort, val, datefrom);
+                    foreach (var item in res)
+                    {
+                        results.Add(item);
+                    }
+
+                    datefrom = datefrom.AddDays(1);
+                }
+            }
+            else
+            {
+                while (datefrom != dateto.AddDays(1))
+                {
+                    var loads = _Context.Load.Where(l => l.Function == val).ToList();
+                    foreach (var load in loads)
+                    {
+                        res = rs.GetEnergies(id, sort, Convert.ToString(load.Id), datefrom);
+
+                        foreach (var item in res)
+                        {
+                            results.Add(item);
+                        }
+                        sort = 2;
+                    }
+                datefrom = datefrom.AddDays(1);
+                    i++;
+            }
+
+
+        }
+            return results;
+        }
+
+   
+
+
+
+
+
+    //if (Id != -1)
+    //{
+    //    res = ps.ProductionReport(fromdate, todate, Id,PrimOrSec);
+
+    //}
+
+
+    public IActionResult AveragePerDay()
+        {
+            FactoryService fs = new FactoryService(_Context);
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.factories = fs.GetAllFactoriesSimple();
+            ViewBag.loads = ls.GetAllLoads();
+            ViewBag.functions = ls.GetAllFunctions();
+            return View();
+        }
+        /*
+
+            sort equal sort by values :
+            1 -> sort by load
+            2-> sort by type
+
+
+              if sortValue equal 1 val will be value of load
+
+           if sortValue equal 2 val will be value of type
+            type:  1-> current
+          type:2->voltage
+            type:3->powerFactor
+ 
+        */
+
+
+        public List<querySource> AveragePerDayfromajax(int id, int sort, string val, DateTime date)
+        {
+            FactoryService fs = new FactoryService(_Context);
+            ViewBag.factories = fs.GetAllFactoriesSimple();
+            ViewBag.factoryname = fs.GetFactoryNameById(id);
+            ViewBag.date = date.ToString("yyyy/MM/dd hh");
+            ReportService r = new ReportService(_Context);
+            List<querySource> res = new List<querySource>();
+
+            int i = 0;
+
+
+            if (sort == 1)
+            {
+                var load = _Context.Load.FirstOrDefault(l => l.Id == Convert.ToInt32(val));
+                SourceReading src;
+                src = _Context.SourceReading.LastOrDefault(s => s.PrimarySourceId == load.SourceId && s.TimeStamp.Day == date.Day && s.Fac_Id == id);
+                if (src != null)
+                {
+                    res.Add(new querySource());
+                    r.GetAveragePerDay(id, date, ref res[i].CurrentAvg, ref res[i].HarmAvg, ref res[i].VoltageAvg, ref res[i].PowerFactorAvg, load.SourceId);
+                    res[i].name = load.name;
+                    res[i].sourceid = load.SourceId;
+                    res[i].id = load.Id;
+                    res[i].facid = id;
+                    res[i].Timestamp = date;
+
+                }
+
+            }
+            else
+            {
+
+                var loads = _Context.Load.Where(l => l.Function == val).ToList();
+
+
+
+
+
+                foreach (var x in loads)
+                {
+                    SourceReading src;
+                    if (x.SourceId % 2 == 0)
+                    {
+
+                        // src = _Context.SourceReading.Last(s => s.SecondarySourceId == x.SourceId && s.TimeStamp.Day == date.Day && s.Fac_Id == id);
+                        src = _Context.SourceReading.LastOrDefault(s => s.SecondarySourceId == x.SourceId && s.TimeStamp.Day == date.Day && s.Fac_Id == id);
+
+                    }
+
+                    else
+                    {
+                        src = _Context.SourceReading.LastOrDefault(s => s.PrimarySourceId == x.SourceId && s.TimeStamp.Day == date.Day && s.Fac_Id == id);
+                    }
+                    if (src != null)
+                    {
+                        res.Add(new querySource());
+                        r.GetAveragePerDay(id, date, ref res[i].CurrentAvg, ref res[i].HarmAvg, ref res[i].VoltageAvg, ref res[i].PowerFactorAvg, x.SourceId);
+                        res[i].name = x.name;
+                        res[i].sourceid = x.SourceId;
+                        res[i].id = x.Id;
+                        res[i].facid = id;
+                        res[i].Timestamp = date;
+                        i++;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                }
+            }
+
+            return res;
+        }
+
+        public List<SourceReading> ReadingsPerHour(int phsnumber, int SourceID , DateTime time,int hour, int facid)
+        {
+            ReportService rs = new ReportService(_Context);
+            var res = rs.getReadingPerHour( phsnumber,  SourceID,  time,  hour,  facid);
+            return res;
+        }
+      /*  [HttpGet]
+        public IActionResult PeakPerDay()
+        {
+            FactoryService fs = new FactoryService(_Context);
+            ViewBag.factories = fs.GetAllFactoriesSimple();
+            PrimarySourceSerivce ps = new PrimarySourceSerivce(_Context);
+            ViewBag.Primary = ps.GetAllPrimarySources();
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.Loads = ls.GetAllLoads();
+            return View();
+        }
+        [HttpPost]*/
+        public IActionResult PeakPerDay( DateTime date , int type=-1 , int primId=-1, int loadId=-1)
+        {
+            FactoryService fs = new FactoryService(_Context);
+            ViewBag.factories = fs.GetAllFactoriesSimple();
+            PrimarySourceSerivce ps = new PrimarySourceSerivce(_Context);
+            ViewBag.Primary = ps.GetAllPrimarySources();
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.Loads = ls.GetAllLoads();
+            ReportService rs = new ReportService(_Context);
+            PowerPeakViewModel res = new PowerPeakViewModel();
+            if (type == 1)
+            {
+                res = rs.PowerPeakPerDay(date, type ,primId);
+            }
+            else
+            {
+                res=rs.PowerPeakPerDay(date, type, loadId);
+            
+        }
+
+
+
+
+            return View(res);
+        }
+       
+        public IActionResult Instantaneous()
+        {
+            FactoryService fs = new FactoryService(_Context);
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.factories = fs.GetAllFactoriesSimple();
+            ViewBag.loads = ls.GetAllLoads();
+
+            return View();
+        }
+      
+
+        public List<Instant> INSfromAjax(int id, int sort, int val, DateTime date)
+        {
+
+            ReportService rs = new ReportService(_Context);
+         
+          var model=  rs.GetInstants(id, sort, val, date);
+           
+            return model;
+          
+        }
+
+        public List<querySource> AverageFromTo(int id, int sort, string val, DateTime datefrom,DateTime dateto)
+        {
+            List<querySource> result = new List<querySource>();
+            List<querySource> res = new List<querySource>();
+            while (datefrom != dateto.AddDays(1))
+            {
+               res=AveragePerDayfromajax(id, sort, val, datefrom);
+                foreach(var item in res)
+                {
+                    result.Add(item);
+                }
+                    
+                datefrom = datefrom.AddDays(1);
+            }
+            return result;
+        }
+
+        public IActionResult HarmonicStat()
+        {
+            FactoryService fs = new FactoryService(_Context);
+            LoadsServices ls = new LoadsServices(_Context);
+            ViewBag.factories = fs.GetAllFactoriesSimple();
+            ViewBag.loads = ls.GetAllLoads();
+            ViewBag.functions = ls.GetAllFunctions();
+            return View();
+        }
+        public List<HarmSt> AverageHarmonicFromTo(int id, int sort, string val, DateTime datefrom, DateTime dateto,int harm)
+        {
+            ReportService rs = new ReportService(_Context);
+            //  GetHarmSts(int id, int sort, string val, DateTime date, int harm)
+            List<HarmSt> Results = new List<HarmSt>();
+            List<HarmSt> Resu = new List<HarmSt>();
+            var i = 0;
+            if (sort == 1) {
+                if (harm != -1) { 
+            while (datefrom != dateto.AddDays(1))
+            {
+                Resu = rs.GetHarmSts(id, sort, val, datefrom, harm);
+                foreach (var item in Resu)
+                {
+                    Results.Add(item);
+                }
+
+                    datefrom = datefrom.AddDays(1);
+                }
+                }
+                else
+                {
+                    for(int k = 3; k < 14; k=k+2) { 
+                    while (datefrom != dateto.AddDays(1))
+                    {
+                        Resu = rs.GetHarmSts(id, sort, val, datefrom, k);
+                        foreach (var item in Resu)
+                        {
+                            Results.Add(item);
+                        }
+
+                        datefrom = datefrom.AddDays(1);
+                    }
+                    }
+                }
+
+            }
+            else
+            {
+                while (datefrom != dateto.AddDays(1))
+                {
+                    var loads = _Context.Load.Where(l => l.Function == val).ToList();
+                    foreach (var load in loads)
+                    {
+                        if (harm != -1)
+                        {
+                            Resu = (rs.GetHarmSts(id, sort, Convert.ToString(load.Id), datefrom, harm));
+
+                            Results.AddRange(Resu);
+                        }
+                        else
+                        {
+                            for (int k = 3; k < 14; k = k + 2)
+                            {
+                                Resu = (rs.GetHarmSts(id, sort, Convert.ToString(load.Id), datefrom, k));
+
+                                Results.AddRange(Resu);
+                            }
+                        }
+                    }
+                    datefrom = datefrom.AddDays(1);
+                    i++;
+                }
+              
+
+            }
+
+            var d = Results.Count;
+            for(int x = 0; x < d; x++)
+            {
+                if (Results[x].cnt == 0)
+                {
+                    Results.RemoveAt(x);
+                    x++;
+
+                }
+            }
+
+            return Results;
+
+        }
+
+    }
+}

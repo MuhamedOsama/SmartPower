@@ -1,0 +1,113 @@
+﻿@model SmartPower.Controllers.Domin.CurrentTotalAvg
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<div>
+    <h4>CurrentTotalAvg</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalAvgOne)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TotalAvgOne)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalAvgTwo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TotalAvgTwo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalAvgThree)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TotalAvgThree)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PeakOne)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PeakOne)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PeakTwo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PeakTwo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PeakThree)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PeakThree)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.VarOne)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.VarOne)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.varTwo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.varTwo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.VarThree)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.VarThree)
+        </dd>
+    </dl>
+</div>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Phase One</th>
+            <th>Phase Two</th>
+            <th>Phase Three</th>
+            <th>Source Name</th>
+
+            <th></th>
+        </tr>
+
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.DataList)
+        {
+        <tr>
+            <td></td>
+            <td>
+                @Html.DisplayFor(ModelItem => item.CurrentOne)
+            </td>
+            <td>
+                @Html.DisplayFor(ModelItem => item.CurrentTwo)
+            </td>
+            <td>
+                @Html.DisplayFor(ModelItem => item.CurrentThree)
+            </td>
+            <td>
+                @Html.DisplayFor(ModelItem => item.PS_Name)
+            </td>
+            <td>
+                @Html.DisplayFor(ModelItem => item.SS_Name)
+            </td>
+
+
+        </tr>
+
+        }
+    </tbody>
+
+
+
+</table>

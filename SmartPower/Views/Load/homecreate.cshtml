@@ -1,0 +1,388 @@
+﻿@model SmartPower.Controllers.Domin.LoadDataModel
+
+@{
+    ViewData["Title"] = "homecreate";
+}
+
+
+<script>
+
+    function disp(value) {
+        var x = document.getElementById("busiother");
+
+        if (value == -1) {
+            x.style.display = "block";
+            document.getElementById("inp").required = true;
+        }
+        else {
+
+            x.style.display = "none";
+            document.getElementById("inp").required = false;
+
+        }
+    }
+
+
+
+    var checkprimary = 0;
+    var checksecondary = 0; 
+    function changeNode(value)
+    {
+        if (value == "1") {
+            var select = document.getElementById("3N");
+            document.getElementById("1N").style.display = "block";
+            select.style.visible = "hidden";
+        }
+        else {
+            document.getElementById("1N").style.display = "block";
+            var select = document.getElementById("3N");
+            select.style.visibility = "visible";
+        }
+    }
+
+    function empty()
+    {
+        var slct = document.getElementById("slcttype");
+        //slct.style.display = "block";
+   
+       
+    }
+
+    function fillPrimayList(data)
+    {
+         var list = document.getElementById("sourcelist");
+        list.innerHTML = "";
+        list.innerHTML = "<option selected disabled>Choose Primary</option>";
+        for (i = 0; i < data.length; i++) {
+            var pName = data[i].name;
+            var pId = data[i].code;
+            list.innerHTML += "<option value='" + pId + "'>" + pName + "</option>";
+        }
+    }
+    function fillsecondaryList(data) {
+        var list = document.getElementById("sourcelist");
+        list.innerHTML = "";
+        list.innerHTML = "<option selected disabled>Choose Secondary</option>";
+        for (i = 0; i < data.length; i++) {
+            var pName = data[i].name;
+            var pId = data[i].code;
+            list.innerHTML += "<option value='" + pId + "'>" + pName + "</option>";
+        }
+    }
+    function fillNodes(data)
+    {
+        var x = document.getElementById("n1");
+        var x2 = document.getElementById("n2");
+        var x3 = document.getElementById("n3");
+   
+        if (data.dN1 == "-1") {
+            x.innerHTML  += "<option  value='1'>Node 1</option>";
+            x2.innerHTML += "<option  value='2'>Node 2</option>";
+            x3.innerHTML += "<option  value='3'>Node 3</option>";
+        }
+        if (data.dN2 == "-1") {
+             x.innerHTML += "<option  value='2'>Node 2</option>";
+            x2.innerHTML += "<option  value='1'>Node 1</option>";
+            x3.innerHTML += "<option  value='2'>Node 2</option>";
+        }
+        if (data.dN3 == "-1") {
+            x.innerHTML  += "<option  value='3'>Node 3</option>";
+            x2.innerHTML += "<option  value='3'>Node 3</option>";
+            x3.innerHTML += "<option  value='1'>Node 1</option>";
+        }
+    }
+
+    function getValidPrimaryld(value, factoryId)
+    {
+
+        document.getElementById("slctprim").style.display = "block";
+        checkprimary = 1;
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetValidPrimarySource", "PhaseConnection")",
+                    dataType: "Json",
+                    cache: false,
+                    data: { type: value, factoryid:factoryId},
+                    success: function (data)
+                    {
+                        fillPrimayList(data);
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+
+                });
+    }
+    
+    function getValidsecondryld(value, factoryId)
+    {
+        document.getElementById("slctprim").style.display = "block";
+     
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetValidsecondrySource", "PhaseConnection")",
+                    dataType: "Json",
+                    cache: false,
+                    data: { type: value, factoryid:factoryId},
+                    success: function (data)
+                    {
+                        fillsecondaryList(data); // data =>  secondarysources 
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+
+                });
+    }
+    function getSources(phase ,type ,fact)
+    {
+        if (phase != "" && type != "" && fact != "") {
+            var x = document.getElementById("txt");
+            if (phase == 1) {
+                // primary
+                getValidPrimaryld(type, fact);
+                x.innerHTML = "Primary Source";
+            }
+            else {
+                // secondary
+                getValidsecondryld(type, fact);
+                x.innerHTML = "Secondary Source"
+
+            }
+        }
+
+    } 
+
+
+      function getValidNode(value) {
+        $.ajax({
+            type: "Get",
+            url: "@Url.Action("GetValidNodes", "PhaseConnection")",
+                    dataType: "Json",
+                    cache: false,
+                    data: { id: value},
+                    success: function (data)
+                    {                      
+                        fillNodes(data);
+                    },
+                    error: function (data) {
+                        alert("error");
+                    },
+                });
+    }
+    function indsOREnter() {
+
+        var x1 = document.getElementById("Radio1");
+        var x2 = document.getElementById("Radio2");
+        if (x1.checked) {
+            document.getElementById("abdo").innerHTML = "<option disabled selected>Indusrial Load Type</option>"
++ "<option class=\"industselect\" value=\"heading load\">Heading Load</option>" +
+                "<option class=\"industselect\" value=\"induction motor\">Induction Motor</option>" +
+                "<option class=\"industselect\" value=\"sunc motor\">Sunc Motor</option>";
+        }
+        if (x2.checked) {
+
+            document.getElementById("abdo").innerHTML =
+                "<option disabled selected>Enterprise Load Type</option>"+
+                
+                "<option class=\"Enterpselect\"  value = \"lighting load\" > Lighting Load</option >" +
+                "<option class=\"Enterpselect\"  value=\"hvac motor\">HVAC Motor</option>" +
+                "<option class=\"Enterpselect\"  value=\"app motor\">App Motor</option>";
+        }
+
+    }
+
+
+    function DisplayOthers() {
+        var x = document.getElementById("other");
+        x.style.display = "block";
+      
+    }
+</script>
+
+<div class="card" style="width:60%"> 
+    <div class="card-header"><strong>Create</strong><small> Load</small></div>
+    <div class="card-body card-block">
+
+        <form asp-action="homeCreate">
+
+            <div class="form-group row ">
+                <lable class="col-sm-4 col-form-label"> Factories Name </lable> <br />
+
+                <select asp-for="Fac_Id" id="fac" required class="form-control col-sm-8" onchange="empty(), getSources(selectionsource.value, selectiontype.value, this.value)">
+                    <option selected disabled value="">Factory</option>
+                    @foreach (var factory in ViewBag.factories)
+                    {
+                        <option value="@factory.FacId">@factory.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mform-check">
+                <div class="radio">
+                    <label for="radio1" class="form-check-label ">
+                        <input id="Radio1" class="form-check-input" name="Rdo" type="radio" checked onclick="indsOREnter()" required />Industrial Load
+                    </label>
+                </div>
+                <div class="radio" style="padding-left: 50px;">
+                    <label for="radio2" class="form-check-label ">
+                        <input id="Radio2" class="form-check-input" name="Rdo" type="radio" onclick="indsOREnter()" required />Enteprise Load
+                    </label>
+                </div>
+            </div>
+            <div class="form-group row ">
+                <!--industrial Load-->
+                <lable class="col-sm-4 col-form-label"> Load Type </lable> <br />
+                <select asp-for="Type" class="form-control col-sm-8" id="abdo" required>
+                    <option disabled selected value="">Indusrial Load Type</option>
+                    <option class="industselect" value="heading load">Heading Load</option>"
+                    <option class="industselect" value="induction motor">Induction Motor</option>"
+                    <option class="industselect" value="sunc motor">Sunc Motor</option>
+                </select>
+            </div>
+            <div class="form-group row ">
+                <lable class="col-sm-4 col-form-label"> Load Name </lable> <br />
+
+                <input asp-for="name" class="form-control col-sm-8" placeholder="Name" required />
+                <span asp-validation-for="name" class="text-danger"></span>
+            </div>
+
+
+
+
+     <div class="form-group row">
+        <label class="col-sm-4 col-form-label"> Function</label>
+         <select asp-for="Function" class="form-control col-sm-8" onchange="disp(this.value)" required>
+                    <option value="" disabled selected> Select Function</option>
+                    @foreach (var i in ViewBag.Functions)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                    <option value="-1">Other..</option>
+
+                </select>
+
+            </div>
+
+
+            <div align="right" class="form-group row" style="display:none" id="busiother">
+                <lable class="col-sm-4 col-form-label">  </lable>
+                <input asp-for="FunctionOther" class="form-control col-sm-8" placeholder="Function" id="inp" required />
+                <span asp-validation-for="Function" class="text-danger"></span>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+          
+
+            <div class="form-group row">
+                <lable class="col-sm-4 col-form-label">Rating Power Factor </lable> <br />
+
+                <input asp-for="PowerFactor" type="number" min="0" class="form-control col-sm-8" placeholder="Rating Power Factor" required />
+                <span asp-validation-for="PowerFactor" class="text-danger"></span>
+            </div>
+            <div class="form-group  row ">
+                <lable class="col-sm-4 col-form-label">Rating Power </lable> <br />
+
+                <input asp-for="Power" type="number" min="0" class="form-control col-sm-8" placeholder="Rating Power" required />
+                <span asp-validation-for="Power" class="text-danger"></span>
+            </div>
+            <div class="form-group row ">
+                <lable class="col-sm-4 col-form-label"> Rating Current </lable> <br />
+
+                <input asp-for="RatingCurrent" type="number" min="0" class="form-control col-sm-8" placeholder="Rating Current" required />
+                <span asp-validation-for="RatingCurrent" class="text-danger"></span>
+            </div>
+            <div class="form-group  row ">
+                <lable class="col-sm-4 col-form-label"> Rating Voltage </lable> <br />
+
+                <input asp-for="RatingVoltage" type="number" min="0" class="form-control col-sm-8" placeholder="Rating Voltage" required />
+                <span asp-validation-for="RatingVoltage" class="text-danger"></span>
+            </div>
+
+            <a class="btn  btn-md" onclick="DisplayOthers()">Other</a>>>
+            <br />
+            <div id="other" style="display:none">
+                <div class="form-group row " id="connection">
+                    <lable class="col-sm-4 col-form-label"> Connection </lable> <br />
+                    <input asp-for="Connection" value="" class="form-control col-sm-8" placeholder="Connection" />
+                    <span asp-validation-for="Connection" class="text-danger"></span>
+                </div>
+                <div class="form-group row " id="Tmp">
+                    <lable class="col-sm-4 col-form-label"> Rating Temperature</lable> <br />
+                    <input asp-for="RatingTemp" value="" type="number" min="0" class="form-control col-sm-8" placeholder="Rating Temperature" />
+                    <span asp-validation-for="RatingTemp" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row " id="slcttype">
+                <lable class="col-sm-4 col-form-label"> Phase Type</lable> <br />
+
+                <select asp-for="PhaseType" class="form-control col-sm-8" id="selectiontype" onchange="changeNode(this.value),getSources(selectionsource.value, this.value, fac.value)" required>
+                    <option selected disabled value="">Phase Type</option>
+                    <option value="1">Single Phase</option>
+                    <option value="3"> Three Phase</option>
+
+                </select>
+            </div>
+
+            <div class="form-group row  " id="slctsource">
+                <lable class="col-sm-4 col-form-label"> Connected Source</lable> <br />
+
+                <select id="selectionsource" class="form-control col-sm-8" onchange="getSources(this.value, selectiontype.value, fac.value)" required>
+                    <option selected disabled value="">Connected Source</option>
+                    <option value="1"> Primary Source</option>
+                    <option value="2"> Secondary Source</option>
+
+                </select>
+            </div>
+            <div align="right" class="form-group row " id="slctprim" style="display:none">
+                <select asp-for="SourceId" class="form-control col-sm-8" id="sourcelist" onchange="getValidNode(this.value)" required>
+                    <option selected disabled value="">Source</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="form-group row col-lg-4" id="1N" style="display:none">
+                    <label class="control-label center-block"> Node 1</label>
+
+                    <select class="form-control col-sm-8" asp-for="dN1" id="n1" required></select>
+                </div>
+
+                <div id="3N" class="col-lg-8 row" style="visibility:hidden">
+
+                    <div class="form-group col-lg-6 ">
+                        <label class="control-label center-block"> Node 2</label>
+
+                        <select asp-for="dN2" class="form-field-select-1 form-control" id="n2"></select>
+                    </div>
+
+                    <div class="form-group  col-lg-6">
+                        <label class="control-label center-block"> Node 3</label>
+
+
+                        <select asp-for="dN3" class="form-field-select-1 form-control" id="n3"></select>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" value="Create" class="btn btn-info btn-md" />
+            <a asp-action="Index" class="btn btn-info btn-md"> Cancel</a>
+        </form>
+      </div>
+</div>
+
+
+
+
+
+
+
+
+

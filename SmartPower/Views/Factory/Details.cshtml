@@ -1,0 +1,58 @@
+﻿@model SmartPower.Controllers.Domin.FactoryDataModelWithFullData
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+
+
+<br />
+
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Scale</th>
+            <th>businessType</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @foreach (var item in ViewBag.factories)
+        {
+        <tr>
+            <td></td>
+            <td>
+               @item.Name
+            </td>   
+            <td>
+              @item.Scale
+            </td>
+            <td>
+                @item.businessType
+            </td>      
+             <td>
+             
+                @Html.ActionLink("Edit", "Edit", new { Id = item.FacId }, new { @class = "btn btn-xs btn-warning " })
+                @*@Html.ActionLink("Details", "Details", "PrimarySource", new { Id = item.Id }, new { @class = "btn btn-xs btn-primary " })*@
+                @Html.ActionLink("Delete", "Delete", new { Id = item.FacId }, new { @class = "btn btn-xs btn-danger " })
+             </td>
+        </tr>
+
+    }
+        </tbody>
+
+
+
+    </table>
+
+
+
+    <div>
+
+    </div>

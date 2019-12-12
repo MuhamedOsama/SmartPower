@@ -1,0 +1,82 @@
+﻿@model IEnumerable<SmartPower.Controllers.Domin.PrimarySourceDataModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Primary source</strong>
+
+    </div>
+    <div class="card-header">       
+            <form action="Index">
+                            <label class="control-label">Factory </label>
+                            <select name="Id" class="myform-control">
+                                <option value="-1"> All</option>
+                                @foreach (var factory in ViewBag.factories)
+                                {
+                                    <option value="@factory.FacId">@factory.Name</option>
+
+                                }
+                            </select>   
+                        <button type="submit" value="Search" style="background:none;border:none" > <i class="fa fa-search"></i> Search</button>
+                        <a asp-action="Create/-1" style="float:right;"><i class="fa fa-plus-square"></i>  Create New</a>
+          </form>
+        </div>
+    <div class="table-stats order-table ov-h">
+
+        <table id="simple-table" class="table">
+            <thead>
+                <tr>
+                    <th >
+                        Code
+                    </th>
+                    <th>
+                       Primary  Source Name
+                    </th>
+                    <th>
+                        Factory Name
+                    </th>
+                    <th> Phase Type</th>
+                    <th>Max Voltage</th>
+                    <th> Max Current</th>
+                    <th> Topology</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Code)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FacName)
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Type)</td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DesignValue)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MaxCurrent)
+                    </td> 
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Topology)
+                    </td>
+                    <td>
+                        @Html.ActionLink("", "Edit", new { Id = item.Code }, new { @class = "ace-icon fa fa-pencil bigger-120 btn btn-xs btn-info  " })
+                        @Html.ActionLink("", "Delete", new { Id = item.Code }, new { @class = "ace -icon fa fa-trash-o bigger-120 btn btn-xs btn-danger " })
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+     </div>
+    </div>

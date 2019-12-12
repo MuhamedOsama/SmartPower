@@ -1,0 +1,264 @@
+﻿@model SmartPower.Domin.HarmSt
+
+<script>
+    function slctsource(value) {
+
+
+        var n = document.getElementById("slct");
+        if (value == 1) {
+
+
+            document.getElementsByName("primId1")[0].style.display = "block";
+            document.getElementsByName("primId1")[1].style.display = "none";
+            document.getElementsByName("primId1")[0].required = true;
+            document.getElementsByName("primId1")[1].required = false;
+
+
+        }
+        else {
+            //document.getElementsByName("primId1")[0].style.d
+            //document.getElementById("loads").style.display = "none";
+            //document.getElementById("type").style.display = "block";
+            //document.getElementById("type").required = true;
+            //document.getElementById("loads").required = false;
+            document.getElementsByName("primId1")[1].style.display = "block";
+            document.getElementsByName("primId1")[0].style.display = "none";
+            document.getElementsByName("primId1")[1].required = true;
+            document.getElementsByName("primId1")[0].required = false;
+
+
+        }
+
+    }
+
+
+
+
+      function red(facid, sort, val, selecteddate, selectdat2,harmval)
+    {
+
+        var graph = document.getElementById("Graphs");
+        graph.style.display = "block";
+        graph.innerHTML = "";
+
+        var details = document.getElementById("detailsPerHour");
+        details.style.display = "none";
+        details.innerHTML = "";
+
+
+                $.ajax({
+                type: "Get",
+                url: "@Url.Action("AverageHarmonicFromTo", "Reports")",
+                dataType: "Json",
+                cache: false,
+                    data: { id: facid, sort: sort, val: val, datefrom: selecteddate,dateto:selectdat2,harm:harmval },
+                success: function (data)
+                {
+
+
+                    draw(data);
+
+
+                }
+            });
+    }
+
+    function draw(data) {
+        for (var c = 0; c < data.length; c++) {
+          //  alert(data[c].harmNum)
+            
+            var inner = document.getElementById("Graphs");
+            inner.innerHTML += "<div class=\"card\">" +
+                "<h3 class=\"center\">" + data[c].loadName + "      " + data[c].date +"   hamronic value :"+ data[c].harmNum +"</h3>" +
+                "<div  id='curchartContainer" + data[c].loadName + data[c].date + data[c].harmNum+ "' style=\"height: 300px; width: 100%;\"></div>" +
+                "</div>";
+
+
+
+
+        }
+        draw2(data);
+    }
+    function draw2(data) {
+
+        var chart
+        var chart2
+        var chart3
+        var chart4
+        for (var c = 0; c < data.length; c++) {
+            chart = new CanvasJS.Chart("curchartContainer" + data[c].loadName + data[c].date + data[c].harmNum, {
+                animationEnabled: true,
+                theme: "light2", // "light1", "light2", "dark1", "dark2"
+                zoomEnabled: true,
+
+                title: {
+                    text: "Average Current "
+                },
+                data: [
+                    {
+                        name: "phase one",
+                        type: "line",
+                        click: onClick,
+                        showInLegend: true,
+                        legendMarkerColor: "red",
+                        //legendText: "MMbbl = one million barrels",
+                        dataPoints: []
+                    },
+                    {
+                        name: "phase two",
+                        type: "line",
+                        click: onClick,
+                        showInLegend: true,
+                        legendMarkerColor: "blue",
+                        // legendText: "MMbbl = one million barrels",
+                        dataPoints: []
+                    },
+                    {
+                        name: "phase three",
+                        type: "line",
+                        click: onClick,
+                        showInLegend: true,
+
+                        legendMarkerColor: "black",
+                        //legendText: "MMbbl = one million barrels",
+                        dataPoints: []
+                    },
+                ]
+            });
+
+
+
+
+
+
+
+
+            var result = data[c];
+            for (var i = 0; i < result.cnt; i++) {
+                
+                chart.options.data[0].dataPoints.push({ x: i, y: result.hphase1[i], name: "" + result.time[i] });
+                chart.options.data[1].dataPoints.push({ x: i, y: result.hphase2[i], name: "" + result.time[i] });
+                chart.options.data[2].dataPoints.push({ x: i, y: result.hphase3[i], name: "" + result.time[i] });
+
+
+
+            }
+            chart.render();
+
+
+
+            function toggleDataSeries(e) {
+
+                if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    e.dataSeries.visible = false;
+                }
+                else {
+                    e.dataSeries.visible = true;
+                }
+                chart.render();
+
+            }
+
+            function onClick(e) {
+                readings(e.dataPoint.name);
+                //alert(e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.name + ", y: " + e.dataPoint.y + " }");
+            }
+
+
+        }
+
+
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Historical Statistics</strong>
+
+    </div>
+    <div class="card-header">
+        <select name="Id" id="fac_id" class="myform-control" required>
+            <option value="-1"> Select Factory</option>
+            @foreach (var factory in ViewBag.factories)
+            {
+                <option value="@factory.FacId">@factory.Name</option>
+            }
+        </select>
+
+
+
+
+        <select name="Type" id="slct" class="myform-control" onchange="slctsource(this.value)">
+            <option disabled selected> Sort By</option>
+            <option value="1"> Load</option>
+            <option value="2"> Function</option>
+
+        </select>
+        <select name="primId1" id="loads" class="myform-control" style="display:none">
+            <option disabled> Select Load</option>
+            @foreach (var load in ViewBag.loads)
+            {
+                <option value="@load.Id"> @load.name</option>
+
+            }
+        </select>
+        <select name="primId1" id="type" class="myform-control" style="display:none">
+            <option disabled> Select function</option>
+
+            @foreach (var function in ViewBag.Functions)
+            {
+                <option value="@function"> @function</option>
+
+            }
+
+        </select>
+
+        <select name="harm" id="harm" class="myform-control">
+            <option selected disabled> Select Harmonic</option>
+
+            <option value="-1"> All</option>
+            <option value="3"> 3</option>
+            <option value="5"> 5</option>
+            <option value="7"> 7</option>
+            <option value="9"> 5</option>
+            <option value="13"> 13</option>
+
+        </select>
+
+
+
+        <label>  From </label>
+        <input type="date" name="date" id="selecteddate" class="myform-control" />
+
+        <label>  To </label>
+        <input type="date" name="date" id="selectdat2" class="myform-control" />
+
+
+        <button onclick='
+    if (document.getElementsByName("primId1")[0].required == true) {
+        red(fac_id.value, slct.value, loads.value, selecteddate.value,selectdat2.value,harm.value)
+    }
+    if (document.getElementsByName("primId1")[1].required == true) {
+        red(fac_id.value, slct.value, document.getElementsByName("primId1")[1].value, selecteddate.value,selectdat2.value,harm.value)
+
+    }' value="" style="background:none;border:none">
+            <i class="fa fa-search"></i> Search
+        </button>
+    </div>
+</div>
+
+
+<div id="Graphs" style="display:none">  </div>
+<div id="detailsPerHour" style="display:none">  </div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>

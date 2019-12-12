@@ -1,0 +1,75 @@
+﻿@model SmartPower.Controllers.Domin.SecondrySourceWithFullLoads
+
+@{
+    ViewData["Title"] = "Details";
+}
+<h2> @Model.Name Details</h2>
+<div>
+
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+</div>
+<br />
+<div class="row">
+    <div class="col-lg-6">
+        <h4>@Model.Name's Loads </h4>
+    </div>
+    <div class="col-lg-6">
+        @Html.ActionLink("Create New Load", "Create", "Load", new { Id = Model.Id }, new { @class = "btn btn-xs btn-success " })
+       
+    </div>
+</div>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>id</th>
+            <th>connection</th>
+            <th>function</th>
+
+            <th></th>
+        </tr>
+
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.Loads)
+        {
+            <tr>
+                <td></td>
+                <td>
+                    @Html.DisplayFor(ModelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(ModelItem => item.Connection)
+                </td>
+                <td>
+                    @Html.DisplayFor(ModelItem => item.Function)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", "Load" ,  new { Id = item.Id }, new { @class = "btn btn-xs btn-warning " })
+                    @Html.ActionLink("Details", "Details", "Load", new { Id = item.Id }, new { @class = "btn btn-xs btn-primary " })
+                    @Html.ActionLink("Delete", "Delete", "Load", new { Id = item.Id }, new { @class = "btn btn-xs btn-danger " })
+                </td>
+            </tr>
+
+        }
+    </tbody>
+
+
+
+</table>
+
+
+
+<div>
+
+</div>

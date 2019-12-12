@@ -1,0 +1,589 @@
+﻿@model SmartPower.Domin.Instant
+@{
+    ViewData["Title"] = "Transit Time Statistics";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<script>
+    function convertArrayOfObjectsToCSV(JKH) {
+       
+        var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+        data = JKH.data || null;
+        if (data == null || !data.length) {
+            return null;
+        }
+
+        columnDelimiter = JKH.columnDelimiter || ',';
+        lineDelimiter = JKH.lineDelimiter || '\n';
+
+        keys = Object.keys(data[0]);
+
+        result = '';
+        result += keys.join(columnDelimiter);
+        result += lineDelimiter;
+
+        data.forEach(function (item) {
+            ctr = 0;
+            keys.forEach(function (key) {
+                if (ctr > 0) result += columnDelimiter;
+
+                result += item[key];
+                ctr++;
+            });
+            result += lineDelimiter;
+        });
+
+        return result;
+    }
+
+
+    function downloadCSV(YUY) {
+        var data, filename, link;
+        var csv = convertArrayOfObjectsToCSV({
+            data: YUY
+        });
+        if (csv == null) alert("SDvs");
+
+        filename = new Date().toLocaleString() + 'export.csv';
+
+        if (!csv.match(/^data:text\/csv/i)) {
+            csv = 'data:text/csv;charset=utf-8,' + csv;
+        }
+        data = encodeURI(csv);
+
+        link = document.createElement('a');
+        link.setAttribute('href', data);
+        link.setAttribute('download', filename);
+        link.click();
+    }
+
+
+
+   
+    function slctsource(value) {
+
+        
+        var n = document.getElementById("slct");
+        if (value == 1) {
+
+          
+            document.getElementsByName("primId1")[0].style.display = "block";
+            document.getElementsByName("primId1")[1].style.display = "none";
+            document.getElementsByName("primId1")[0].required = true;
+            document.getElementsByName("primId1")[1].required = false;
+
+
+        }
+        else {
+            //document.getElementsByName("primId1")[0].style.d
+            //document.getElementById("loads").style.display = "none";
+            //document.getElementById("type").style.display = "block";
+            //document.getElementById("type").required = true;
+            //document.getElementById("loads").required = false;
+            document.getElementsByName("primId1")[1].style.display = "block";
+            document.getElementsByName("primId1")[0].style.display = "none";
+            document.getElementsByName("primId1")[1].required = true;
+            document.getElementsByName("primId1")[0].required = false;
+
+
+        }
+
+    }
+
+    function red(facid,sort,val,selecteddate)
+    {
+        var graph = document.getElementById("Graphs");
+        graph.style.display = "block";
+        graph.innerHTML = "";
+
+      
+
+                $.ajax({
+                type: "GET",
+                url: "@Url.Action("INSfromAjax", "Reports")",
+                dataType: "Json",
+                    cache: false,
+                    data: { id: facid, sort: sort, val: val , date: selecteddate },
+                success: function (data)
+                {
+                    //alert(data[0].sortVal);
+                    //sortVal
+                    draw(data);
+                    downloadCSV(data)
+                  
+                    
+                }
+        });
+
+    }
+
+    function draw(data) {
+
+
+
+        for (var c = 0; c < data.length; c++) {
+            
+             
+            if (data[c].sortVal == 1) {
+                var inner = document.getElementById("Graphs");
+                    inner.innerHTML += "<div class=\"card\" id=\"card1\">" +"<h3 class=\"center\">" + data[c].loadName + "</h3>" +
+                    "<div class=\"curr\"  id='curchartContainer" + data[c].cnt + "sm" + c + "' style=\"height: 300px; width: 100%;\"></div>" +
+                    "<br />";
+            } else if (data[c].sortVal == 2) {
+               
+                var inner = document.getElementById("Graphs");
+                    inner.innerHTML += "<div class=\"card\" id=\"card2\">" +"<div class=\"volu\"  id='volchartContainer" + data[c].cnt + "sm" + c + "' style=\"height: 300px;  width: 100%;\"></div>" +
+                    "<br />";
+            } else if (data[c].sortVal == 3) {
+                
+                var inner = document.getElementById("Graphs");
+                inner.innerHTML +="<div class=\"pow\"  class=\"card\" >" + "<div  id='powchartContainer" + data[c].cnt + "sm" + c + "' style=\"height: 300px;  width: 100%;\"></div>" +
+                    "<br />";
+
+                //var curID = "curchartContainer" + data[c].cnt + "sm" + c;
+                //var volID = "volchartContainer" + data[c].cnt + "sm" + c;
+
+
+            
+            } else {
+              
+                var inner = document.getElementById("Graphs");
+
+                    inner.innerHTML += "<div class=\"card\">" + "<h3 class=\"center\">" + data[c].loadName + "</h3>" +
+                        "<div  class=\"curr\" id='curchartContainer" + data[c].cnt + "sm" + c + "' style=\"height: 300px; width: 100%;\"></div>" +
+                        "<br />" +
+                        "<div class=\"volu\" id='volchartContainer" + data[c].cnt + "sm" + c + "' style=\"height: 300px; width: 100%;\"></div>" +
+                        "<br />" +
+                        "<div class=\"pow\" id='powchartContainer" + data[c].cnt + "sm" + c + "' style=\"height: 300px; width: 100%;\"></div>" +
+                    "<br />";
+             
+              
+
+                }
+
+
+
+        }
+        draw2(data);
+    }
+        //} else {
+
+        //    var inner = document.getElementById("Graphs");
+        //    inner.innerHTML += "<div class=\"card\">" +
+        //        "<h3 class=\"center\">" + data[0].loadName + "</h3>" +
+        //        "<div  id='curchartContainer" + data[0].loadName + "' style=\"height: 300px; width: 100%;\"></div>" +
+        //        "<br />" +
+
+        //        "<div  id='volchartContainer" + data[0].loadName + "' style=\"height: 300px; width: 100%;\"></div>" +
+        //        "<br />" +
+        //        "<div  id='powchartContainer" + data[0].loadName + "' style=\"height: 300px; width: 100%;\"></div>" +
+        //        "<br />";
+
+        //    draw2(data);
+        //}
+    
+
+    function draw2(data) {
+        
+
+        
+  
+
+       
+            var chart;
+            var chart2;
+            var chart3;
+           for (var i = 0; i < data.length; i++) {
+
+               if (data[i].sortVal == 1) {
+
+                   chart = new CanvasJS.Chart("curchartContainer" + data[i].cnt + "sm" + i, {
+                       animationEnabled: true,
+                       title: {
+                           text: "Instantaneous Current"
+                       },
+
+                       toolTip: {
+                           shared: true
+                       },
+
+                       data: [
+                           {
+                               name: "phase one",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "red",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+
+                           {
+                               name: "phase two",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "blue",
+                               // legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                           {
+                               name: "phase three",
+                               type: "line",
+
+                               showInLegend: true,
+
+                               legendMarkerColor: "black",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                       ]
+                   });
+
+               }
+               else if (data[i].sortVal == 2) {
+
+                   chart2 = new CanvasJS.Chart("volchartContainer" + data[i].cnt + "sm" + i, {
+                       animationEnabled: true,
+                       title: {
+                           text: "Instantaneous Voltage"
+                       },
+
+                       toolTip: {
+                           shared: true
+                       },
+
+                       data: [
+                           {
+                               name: "phase one",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "red",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+
+                           {
+                               name: "phase two",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "blue",
+                               // legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                           {
+                               name: "phase three",
+                               type: "line",
+
+                               showInLegend: true,
+
+                               legendMarkerColor: "black",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                       ]
+                   });
+               }
+
+               else if (data[i].sortVal == 3) {
+
+                   chart3 = new CanvasJS.Chart("powchartContainer" + data[i].cnt + "sm" + i, {
+                       animationEnabled: true,
+                       title: {
+                           text: "Instantaneous powerfactor"
+                       },
+
+                       toolTip: {
+                           shared: true
+                       },
+
+                       data: [
+                           {
+                               name: "phase one",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "red",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+
+                           {
+                               name: "phase two",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "blue",
+                               // legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                           {
+                               name: "phase three",
+                               type: "line",
+
+                               showInLegend: true,
+
+                               legendMarkerColor: "black",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                       ]
+                   });
+                   // alert(data.phase2[0]);
+               } else {
+                   
+                   chart = new CanvasJS.Chart("curchartContainer" + data[i].cnt + "sm" + i, {
+                       animationEnabled: true,
+                       title: {
+                           text: "Instantaneous Current"
+                       },
+
+                       toolTip: {
+                           shared: true
+                       },
+
+                       data: [
+                           {
+                               name: "phase one",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "red",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+
+                           {
+                               name: "phase two",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "blue",
+                               // legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                           {
+                               name: "phase three",
+                               type: "line",
+
+                               showInLegend: true,
+
+                               legendMarkerColor: "black",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                       ]
+                   });
+                   chart2 = new CanvasJS.Chart("volchartContainer" + data[i].cnt + "sm" + i, {
+                       animationEnabled: true,
+                       title: {
+                           text: "Instantaneous Voltage"
+                       },
+
+                       toolTip: {
+                           shared: true
+                       },
+
+                       data: [
+                           {
+                               name: "phase one",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "red",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+
+                           {
+                               name: "phase two",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "blue",
+                               // legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                           {
+                               name: "phase three",
+                               type: "line",
+
+                               showInLegend: true,
+
+                               legendMarkerColor: "black",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                       ]
+                   });
+                   chart3 = new CanvasJS.Chart("powchartContainer" + data[i].cnt + "sm" + i, {
+                       animationEnabled: true,
+                       title: {
+                           text: "Instantaneous powerfactor"
+                       },
+
+                       toolTip: {
+                           shared: true
+                       },
+
+                       data: [
+                           {
+                               name: "phase one",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "red",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+
+                           {
+                               name: "phase two",
+                               type: "line",
+
+                               showInLegend: true,
+                               legendMarkerColor: "blue",
+                               // legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                           {
+                               name: "phase three",
+                               type: "line",
+
+                               showInLegend: true,
+
+                               legendMarkerColor: "black",
+                               //legendText: "MMbbl = one million barrels",
+                               dataPoints: []
+                           },
+                       ]
+                   });
+               }
+
+            var result = data[i];
+            //alert(result.loadName);
+            for (var c = 0; c < result.cnt; c++) {
+                if (data[i].sortVal == 1) {
+                    chart.options.data[0].dataPoints.push({ x: c, y: result.cphase1[c], name: "" + result.time[c] });
+                    chart.options.data[1].dataPoints.push({ x: c, y: result.cphase2[c], name: "" + result.time[c] });
+                    chart.options.data[2].dataPoints.push({ x: c, y: result.cphase3[c], name: "" + result.time[c] });
+                } else if (data[i].sortVal == 2) {
+                    chart2.options.data[0].dataPoints.push({ x: c, y: result.vphase1[c], name: "" + result.time[c] });
+                    chart2.options.data[1].dataPoints.push({ x: c, y: result.vphase2[c], name: "" + result.time[c] });
+                    chart2.options.data[2].dataPoints.push({ x: c, y: result.vphase3[c], name: "" + result.time[c] });
+                } else if (data[i].sortVal == 3) {
+                    chart3.options.data[0].dataPoints.push({ x: c, y: result.pphase1[c], name: "" + result.time[c] });
+                    chart3.options.data[1].dataPoints.push({ x: c, y: result.pphase2[c], name: "" + result.time[c] });
+                    chart3.options.data[2].dataPoints.push({ x: c, y: result.pphase3[c], name: "" + result.time[c] });
+
+                }
+                else {
+                    
+                    chart.options.data[0].dataPoints.push({ x: c, y: result.cphase1[c], name: "" + result.time[c] });
+                    chart.options.data[1].dataPoints.push({ x: c, y: result.cphase2[c], name: "" + result.time[c] });
+                    chart.options.data[2].dataPoints.push({ x: c, y: result.cphase3[c], name: "" + result.time[c] });
+
+                    chart2.options.data[0].dataPoints.push({ x: c, y: result.vphase1[c], name: "" + result.time[c] });
+                    chart2.options.data[1].dataPoints.push({ x: c, y: result.vphase2[c], name: "" + result.time[c] });
+                    chart2.options.data[2].dataPoints.push({ x: c, y: result.vphase3[c], name: "" + result.time[c] });
+
+                    chart3.options.data[0].dataPoints.push({ x: c, y: result.pphase1[c], name: "" + result.time[c] });
+                    chart3.options.data[1].dataPoints.push({ x: c, y: result.pphase2[c], name: "" + result.time[c] });
+                    chart3.options.data[2].dataPoints.push({ x: c, y: result.pphase3[c], name: "" + result.time[c] });
+
+                }
+               }
+
+
+
+               if (data[i].sortVal == 1) {
+                   chart.render();
+               } else if (data[i].sortVal == 2) {
+                   chart2.render();
+               }
+               else if (data[i].sortVal == 3) {
+                   chart3.render();
+               } else {
+                  
+                   chart.render();
+
+                   chart2.render();
+
+                   chart3.render();
+                   
+
+               }
+         
+
+        }
+        
+    }
+
+
+    </script>
+<div class="card">
+    <div class="card-header" style="text-align:center;">
+        <strong class="card-title">Transit Time Statistics</strong>
+
+    </div>
+    <div class="card-header">
+        <select name="Id" id="fac_id" class="myform-control" required>
+            <option value="-1"> Select Factory</option>
+            @foreach (var factory in ViewBag.factories)
+            {
+                <option value="@factory.FacId">@factory.Name</option>
+            }
+        </select>
+
+        <select name="Type" id="slct" class="myform-control" onchange="slctsource(this.value)">
+            <option disabled selected> Sort By</option>
+            <option value="1"> Load</option>
+            <option value="2"> Type</option>
+
+        </select>
+        <select name="primId1" id="loads" class="myform-control" style="display:none">
+            <option disabled> Select Load</option>
+            @foreach (var load in ViewBag.loads)
+            {
+                <option value="@load.Id"> @load.name</option>
+
+            }
+        </select>
+        <select name="primId1" id="type" class="myform-control" style="display:none">
+            <option disabled> Select Type</option>
+
+            <option value="1"> Current</option>
+            <option value="2"> Voltage</option>
+            <option value="3"> PowerFactor</option>
+
+        </select>
+
+
+
+
+
+
+        <label>  Date </label>
+        <input type="date" name="date" id="selecteddate" class="myform-control" />
+        <button onclick='
+    if (document.getElementsByName("primId1")[0].required == true) {
+        red(fac_id.value, slct.value, loads.value, selecteddate.value)
+    }
+    if (document.getElementsByName("primId1")[1].required == true) {
+        red(fac_id.value, slct.value, document.getElementsByName("primId1")[1].value, selecteddate.value)
+
+    }'
+      
+    value="" style="background:none;border:none"><i class="fa fa-search"></i> Search</button>
+    </div>
+</div>
+
+
+<div id="Graphs" >  </div>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
