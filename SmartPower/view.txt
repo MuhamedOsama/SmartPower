@@ -1,0 +1,229 @@
+
+@model SmartPower.Domin.report.EnergyAssesment
+<script>
+    function getAllLoads(value) {
+
+                $.ajax({
+            type: "GET",
+            url: "@Url.Action("getAllLoadsbyFactory", "Reports")",
+                    dataType: "Json",
+                    cache: false,
+            data: { factory_id: value},
+
+                    success: function(data)
+                    {
+
+                        
+                        var loadsELement = document.getElementsByName("primId1")[0];
+
+
+
+        for (var c = 0; c < data.length; c++)
+        {
+            loadsELement.innerHTML += "<option value=" + data[c].id + ">" + data[c].name + "</option>";
+
+        }
+    }
+
+});
+    }
+
+    function slctsource(value) {
+
+
+        var n = document.getElementById("Ener");
+        if (value == 1) {
+
+
+            document.getElementsByName("primId1")[0].style.display = "block";
+            document.getElementsByName("primId1")[1].style.display = "none";
+            document.getElementsByName("primId1")[0].required = true;
+            document.getElementsByName("primId1")[1].required = false;
+
+
+        }
+        else {
+            //document.getElementsByName("primId1")[0].style.d
+            //document.getElementById("loads").style.display = "none";
+            //document.getElementById("type").style.display = "block";
+            //document.getElementById("type").required = true;
+            //document.getElementById("loads").required = false;
+            document.getElementsByName("primId1")[1].style.display = "block";
+            document.getElementsByName("primId1")[0].style.display = "none";
+            document.getElementsByName("primId1")[1].required = true;
+            document.getElementsByName("primId1")[0].required = false;
+
+
+        }
+
+    }
+    function Getdatalist(selecteddate, sort, val)
+    {
+       ;
+
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("EnergyAssesmentAja", "Reports")",
+                    dataType: "Json",
+                    cache: false,
+            data: { date: selecteddate, type: sort, val: val},
+
+                    success: function (data)
+                    {
+                        console.log(data)
+                        var inner = document.getElementById("tbody");
+                        inner.innerHTML = '';
+
+
+                        for (var c = 0; c < data.length; c++) {
+
+
+
+
+
+                            inner.innerHTML += '     <tr>' +
+                                '<td> ' + data[c].loadName + ' </td>' +
+                                '<td> ' + data[c].date + ' </td>' +
+
+
+                                ' <td>' + data[c].percentegeFunction + ' </td>' +
+                                '<td>' + data[c].precentageLoad + ' </td>' +
+                                '<td>' + data[c].totalEnergyFunction + ' </td>' +
+                                '<td>' + data[c].totalEnergyLoad + ' </td>' +
+                                '</tr>';
+
+                        }
+                    }
+
+        });
+    }
+
+
+
+    function filldateslist(data) {
+        var inner = document.getElementById("tbody");
+        inner.innerHTML = '';
+
+
+        for (var c = 0; c < data.length; c++) {
+
+
+
+
+
+                    inner.innerHTML += '     <tr>' +
+                        '<td> ' + data[c].loadName + ' </td>' +
+
+                        ' <td>' + data[c].date + ' </td>' +
+                        '<td>' + data[c].ephase1 + ' </td>' +
+                        '<td>' + data[c].ephase2 + ' </td>' +
+                        '<td>' + data[c].ephase3 + ' </td>' +
+                        '</tr>';
+
+        }
+    }
+</script>
+
+<body>
+    <div class="card">
+        <div class="card-header" style="text-align:center;">
+            <strong class="card-title">Energy Assesment</strong>
+
+        </div>
+        <div class="card-header">
+
+
+            <select name="Id" id="fac_id" class="myform-control" onchange="getAllLoads(document.getElementById('fac_id').value)" required>
+                <option value="-1"> Select Factory</option>
+                @foreach (var factory in ViewBag.factories)
+                {
+                    <option value="@factory.FacId">@factory.Name</option>
+                }
+            </select>
+
+
+            <select name="Type" id="slct" class="myform-control" onchange="slctsource(this.value)">
+                <option disabled selected> Sort By</option>
+                <option value="1"> Loads</option>
+                <option value="2"> Function</option>
+
+            </select>
+
+            <select name="primId1" id="loads" class="myform-control" style="display:none">
+                <option disabled> Select Load</option>
+
+            </select>
+            <select name="primId1" id="type" class="myform-control" style="display:none">
+                <option disabled> Select function</option>
+
+                @foreach (var function in ViewBag.Functions)
+                {
+                    <option value="@function"> @function</option>
+
+                }
+
+            </select>
+
+
+            <label>  From </label>
+            <input type="date" name="date" id="selecteddate" class="myform-control" />
+
+
+
+            <button onclick='
+    if (document.getElementsByName("primId1")[0].required == true) {
+        Getdatalist(selecteddate.value, slct.value, document.getElementsByName("primId1")[0].value)
+    } else {
+         Getdatalist(selecteddate.value, slct.value, document.getElementsByName("primId1")[1].value)
+    }
+   ' value="" style="background:none;border:none">
+                <i class="fa fa-search"></i> Search
+            </button>
+
+
+
+        </div>
+    </div>
+
+    <div class="table-stats order-table ov-h">
+
+        <table id="simple-tableData" class="table  ">
+            <thead>
+            
+                <tr>
+                    <th>
+                        Source  Name
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+                    <th style="border-left:1px solid #e0e0e4">
+                        percentage function
+                    </th>
+                    <th style="border-left:1px solid #e0e0e4">
+                        percentage load
+                    </th>
+                    <th style="border-left:1px solid #e0e0e4">
+                        total energy load
+                    </th>
+                    <th>
+                        total energy function
+                    </th>
+                  
+
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+
+    </div>
+
+
+
+
+    <div id="Graphs" style="display:none">  </div>
+    <div id="detailsPerHour" style="display:none">  </div>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+

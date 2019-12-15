@@ -1,0 +1,21 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace SmartPower.Domin.report
+{
+    public class EnergyAssesment
+    {
+        public DateTime date { get; set; }
+        public string loadName { get; set; }
+        public decimal TotalEnergyLoad { get; set; }
+
+        public decimal TotalEnergyFunction { get; set; }
+        public decimal PrecentageLoad { get; set; }
+        public decimal PercentegeFunction { get; set; }
+
+        //public Dictionary PercentageLoads<string, decimal>(string, decimal);
+    }
+}

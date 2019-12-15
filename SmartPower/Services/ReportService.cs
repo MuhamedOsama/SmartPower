@@ -1792,10 +1792,25 @@ namespace SmartPower.Services
                 result.Ephase1 = x.pAvg1;
                 result.Ephase2 = x.pAvg2;
                 result.Ephase3 = x.pAvg3;
-            
-            Res.Add(result);
+
+                Res.Add(result);
             }
             return Res;
+        }
+        public AveragePowerTodayViewModel AverageLoadPowerToday(int LoadId, DateTime Day)
+        {
+            DateTime Date = Day.Date;
+            decimal p1avg = _Context.SourceReading.Where(r => r.PrimarySourceId == LoadId && r.TimeStamp.Date == Date).Average(r => r.Power1);
+            decimal p2avg = _Context.SourceReading.Where(r => r.PrimarySourceId == LoadId && r.TimeStamp.Date == Date).Average(r => r.Power2);
+            decimal p3avg = _Context.SourceReading.Where(r => r.PrimarySourceId == LoadId && r.TimeStamp.Date == Date).Average(r => r.Power3);
+            AveragePowerTodayViewModel model = new AveragePowerTodayViewModel
+            {
+                LoadPower1Average = p1avg,
+                LoadPower2Average = p2avg,
+                LoadPower3Average = p3avg,
+                LoadPowerAverage = (p1avg + p2avg + p3avg) / 3
+            };
+            return model;
         }
     }
 }

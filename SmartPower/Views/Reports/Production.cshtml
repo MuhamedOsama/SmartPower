@@ -1,12 +1,13 @@
-﻿@model  IEnumerable<SmartPower.Domin.ProductionViewModel>
+﻿@model IEnumerable<SmartPower.Domin.ProductionViewModel>
 
 @{
     ViewData["Title"] = "Production";
 }
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
 <script>
+
 
 
    function Getdatalist(factoryId)
@@ -43,32 +44,32 @@
 </script>
 
 
-<div class="card">
+<div class="card" id="app">
     <div class="card-header" style="text-align:center;">
         <strong class="card-title">Energy Use Index</strong>
 
     </div>
     <div class="card-header">
         <form action="Production">
-       
-                    <select name="Id" class="myform-control" onchange="Getdatalist(this.value)" required>
-                            <option value="-1"> Select Factory</option>
-                            @foreach (var factory in ViewBag.factories)
-                            {
-                                <option value="@factory.FacId">@factory.Name</option>
-                            }
-                        </select>
-                 
-                       <label>  from</label>
-                        <input type="date" name="fromdate"  class="myform-control"/>
-                   
-                       <label>  to</label>
-                        <input type="date" name="todate"  class="myform-control"/>
-                   
-                    <button type="submit" value="Search" style="background:none;border:none"><i class="fa fa-search"></i> Search</button>
-              
-            
-         
+
+            <select name="Id" class="myform-control" onchange="Getdatalist(this.value)" required>
+                <option value="-1"> Select Factory</option>
+                @foreach (var factory in ViewBag.factories)
+                {
+                    <option value="@factory.FacId">@factory.Name</option>
+                }
+            </select>
+
+            <label>  from</label>
+            <input type="date" name="fromdate" class="myform-control" />
+
+            <label>  to</label>
+            <input type="date" name="todate" class="myform-control" />
+
+            <button type="submit" value="Search" style="background:none;border:none"><i class="fa fa-search"></i> Search</button>
+
+
+
         </form>
     </div>
 
@@ -81,77 +82,77 @@
                     <th></th>
                     <th></th>
                     <th colspan="3" style="border-right:1px solid #e0e0e4 ;border-left:1px solid #e0e0e4" class="text-center">Energy (KWH)</th>
-                    <th colspan="3" class="text-center"  style="border-right:1px solid #e0e0e4"  >Average Power (KW)</th>
-                    <th colspan="3" class="text-center" >Ratio (%)</th>
+                    <th colspan="3" class="text-center" style="border-right:1px solid #e0e0e4">Average Power (KW)</th>
+                    <th colspan="3" class="text-center">Ratio (%)</th>
 
 
                 </tr>
                 <tr>
-                    <th >
+                    <th>
                         Primary  Name
                     </th>
-                    <th >
+                    <th>
                         Quantity
                     </th>
-                    <th >
+                    <th>
                         Date
                     </th>
-                    <th style="border-left:1px solid #e0e0e4"  >
-                       I
+                    <th style="border-left:1px solid #e0e0e4">
+                        I
                     </th>
-                    <th >
+                    <th>
                         II
                     </th>
-                    <th style="border-right:1px solid #e0e0e4 "  >
-                      III
+                    <th style="border-right:1px solid #e0e0e4 ">
+                        III
                     </th>
-                    <th >
-                       I
+                    <th>
+                        I
                     </th>
-                    <th >
-                       II
-                    </th>
-                    <th style="border-right:1px solid #e0e0e4" >
-                      III
-                    </th>
-                    <th >
-                      I
-                    </th>
-                    <th >
+                    <th>
                         II
                     </th>
-                    <th >
-                       III
+                    <th style="border-right:1px solid #e0e0e4">
+                        III
+                    </th>
+                    <th>
+                        I
+                    </th>
+                    <th>
+                        II
+                    </th>
+                    <th>
+                        III
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-@foreach (var mod in Model)
-{
-  foreach (var item in mod.Diction)
-    {
-       for(int i =0;i< mod.Diction[item.Key].Count;i++)
-        {
-            <tr>
-                <td >  @mod.Diction[item.Key][i].Item1 </td>
-                <td>   @mod.Quantity </td>
-                <td >  @mod.Diction[item.Key][i].Item2 </td>
-                <td >  @mod.Diction[item.Key][i].Item3 </td>
-                <td >  @mod.Diction[item.Key][i].Item4 </td>
-                <td >  @mod.Diction[item.Key][i].Item5 </td>
-                <td >  @mod.AvgPower[item.Key][i].Item1 </td>
-                <td >  @mod.AvgPower[item.Key][i].Item2 </td>
-                <td >  @mod.AvgPower[item.Key][i].Item3 </td>
-                <td >  @mod.Ratio[item.Key][i].Item1   </td>
-                <td >  @mod.Ratio[item.Key][i].Item2 </td>
-                <td >  @mod.Ratio[item.Key][i].Item3 </td>
-            </tr>
-        }
+                @foreach (var mod in Model)
+                {
+                    foreach (var item in mod.Diction)
+                    {
+                        for (int i = 0; i < mod.Diction[item.Key].Count; i++)
+                        {
+                            <tr>
+                                <td>  @mod.Diction[item.Key][i].Item1 </td>
+                                <td>   @mod.Quantity </td>
+                                <td>  @mod.Diction[item.Key][i].Item2 </td>
+                                <td>  @mod.Diction[item.Key][i].Item3 </td>
+                                <td>  @mod.Diction[item.Key][i].Item4 </td>
+                                <td>  @mod.Diction[item.Key][i].Item5 </td>
+                                <td>  @mod.AvgPower[item.Key][i].Item1 </td>
+                                <td>  @mod.AvgPower[item.Key][i].Item2 </td>
+                                <td>  @mod.AvgPower[item.Key][i].Item3 </td>
+                                <td>  @mod.Ratio[item.Key][i].Item1   </td>
+                                <td>  @mod.Ratio[item.Key][i].Item2 </td>
+                                <td>  @mod.Ratio[item.Key][i].Item3 </td>
+                            </tr>
+                        }
 
-    }
+                    }
 
-}
+                }
 
 
             </tbody>
