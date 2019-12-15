@@ -502,11 +502,15 @@ namespace SmartPower.Controllers
         [HttpPost]
         public IActionResult AverageLoadPowerToday([FromBody] dynamic data)
         {
+
             int LoadId = data.id;
             decimal p1avg=0, p2avg=0, p3avg = 0;
-            DateTime Date = Convert.ToDateTime(((string)data.date));
+            DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
+            DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
+            
             Load load = _Context.Load.FirstOrDefault(l => l.Id == LoadId);
-            List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && r.TimeStamp.Date == Date && r.Power1 != 0 && r.Power2 != 0 && r.Power3 !=0 ).ToList();
+            
+            List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && (r.TimeStamp.Date>= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 !=0 ).ToList();
             if (reads.Any())
             {
                 p1avg = reads.Average(r => r.Power1);
@@ -515,7 +519,8 @@ namespace SmartPower.Controllers
                 return Ok(new
                 {
                     LoadName = load.name,
-                    Date = Date.ToShortDateString(),
+                    FromDate = FromDate.ToShortDateString(),
+                    ToDate = ToDate.ToShortDateString(),
                     LoadPower1Average = Math.Round(p1avg,3),
                     LoadPower2Average = Math.Round(p2avg,3),
                     LoadPower3Average = Math.Round(p3avg,3),
@@ -539,13 +544,14 @@ namespace SmartPower.Controllers
             decimal totalAveragePower = 0;
             decimal p1avgAll = 0, p2avgAll = 0, p3avgAll = 0;
             int FunctionId = data.id;
-            DateTime Date = Convert.ToDateTime(((string)data.date)).Date;
+            DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
+            DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
             Function function = _Context.Functions.FirstOrDefault(f => f.Id == FunctionId);
             var loadsIds = _Context.Load.Where(l => l.Function == function.FunctionName).Select(l => l.Id).ToList();
             List<SourceReading> readings = new List<SourceReading>();
             loadsIds.ForEach((id) =>
             {
-                List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == id && r.TimeStamp.Date == Date && r.Power1 != 0 && r.Power2 != 0 && r.Power3 !=0 ).ToList();
+                List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 !=0 ).ToList();
                 if (reads.Any())
                 {
                     decimal p1a = reads.Average(r => r.Power1);
@@ -563,7 +569,8 @@ namespace SmartPower.Controllers
             return Ok(new
             {
                 Name = function.FunctionName,
-                Date = Date.ToShortDateString(),
+                FromDate = FromDate.ToShortDateString(),
+                ToDate = ToDate.ToShortDateString(),
                 o1 = Math.Round(p1avgAll,3),
                 p2 = Math.Round(p2avgAll,3),
                 p3 = Math.Round(p3avgAll,3),

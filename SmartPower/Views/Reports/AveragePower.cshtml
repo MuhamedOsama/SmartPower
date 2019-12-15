@@ -7,14 +7,41 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
 
 <div class="container" id="app">
-    
+
     <div class="row justify-content-center mb-4">
-        <h2 class="text-center">{{title}} Report For : <span class="toggle">
-    <span class="btn btn-round btn-secondary active" ref="CustomButton" v-on:click="ToggleReportMethod">{{report}}</span>
-</span></h2>
+        <h2 class="text-center">
+            {{title}} Report For : <span class="toggle">
+                <span class="btn btn-round btn-secondary active" ref="CustomButton" v-on:click="ToggleReportMethod">{{report}}</span>
+            </span>
+        </h2>
     </div>
 
-    <table class="table">
+
+
+
+    <div class="row bt-4">
+        <div class="col-4">
+            <select v-model="Id" class="custom-select">
+                <option disabled selected>Select</option>
+
+                <option v-for="item in items" :key="item.id" :value="item.id">
+                    {{item.name}}
+                </option>
+
+            </select>
+        </div>
+        <div class="col-3">
+            <input class="form-control" type="date" v-model="fromdate" name="Fromdate" value="" />
+        </div>
+        <div class="col-3">
+            <input class="form-control" type="date" v-model="todate" name="Todate" value="" />
+        </div>
+
+        <input v-if="isLoad" ref="LoadReportButton" class="btn" type="button" value="Get Load Report" v-on:click="GetLoadReport()" />
+        <input v-else ref="FunctionReportButton" class="btn" type="button" value="Get Function Report" v-on:click="GetFunctionReport()" />
+    </div>
+
+    <table class="table mt-4">
         <thead>
             <tr>
                 <th></th>
@@ -30,7 +57,10 @@
                 <th v-else>Function Name</th>
 
                 <th>
-                    Date
+                    FromDate
+                </th>
+                <th>
+                    ToDate
                 </th>
                 <th style="border-left:1px solid #e0e0e4">
                     I
@@ -53,29 +83,6 @@
             </tr>
         </tbody>
     </table>
-
-
-    <div class="row bt-4">
-        <div class="col-4">
-            <select v-model="Id" class="custom-select">
-                <option disabled selected>Select</option>
-
-                <option v-for="item in items" :key="item.id" :value="item.id">
-                    {{item.name}}
-                </option>
-
-            </select>
-        </div>
-        <div class="col-4">
-            <input class="form-control" type="date" v-model="date" name="date" value="" />
-        </div>
-
-
-        <input v-if="isLoad" ref="LoadReportButton" class="btn" type="button" value="Get Load Report" v-on:click="GetLoadReport()" />
-        <input v-else ref="FunctionReportButton" class="btn" type="button" value="Get Function Report" v-on:click="GetFunctionReport()" />
-    </div>
-
-
 </div>
 
 <script>
@@ -92,15 +99,16 @@
             Id: "Select",
             FunctionId: "Select Function",
             items: null,
-            date: null,
+            fromdate: null,
+            todate:null,
             isLoad: true,
             report: "Load",
             reportResult: null
         },
         methods: {
             async GetLoadReport() {
-                console.log(this.Id,this.date)
-                let data = JSON.stringify({ id: this.Id, date: this.date })
+                console.log(this.Id,this.fromdate,this.todate)
+                let data = JSON.stringify({ id: this.Id, fromdate: this.fromdate, todate: this.todate })
                 this.$refs.LoadReportButton.classList.toggle("disabled")
                 const response = await fetch('/reports/AverageLoadPowerToday', {
                     method: 'POST',
@@ -115,7 +123,7 @@
                 this.$refs.LoadReportButton.classList.toggle("disabled")
             },
             async GetFunctionReport() {
-                let data = JSON.stringify({ id: this.Id, date: this.date })
+                let data = JSON.stringify({ id: this.Id, fromdate: this.fromdate, todate: this.todate  })
                 this.$refs.FunctionReportButton.classList.toggle("disabled")
                 const response = await fetch('/reports/AverageFunctionPowerToday', {
                     method: 'POST',
