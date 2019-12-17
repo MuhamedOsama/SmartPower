@@ -5,6 +5,7 @@
 }
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+<link href="~/assets/css/Loader.css" rel="stylesheet" />
 
 <div class="container" id="app">
 
@@ -37,13 +38,14 @@
             <input class="form-control" type="date" v-model="todate" name="Todate" value="" />
         </div>
 
-        <input v-if="isLoad" ref="LoadReportButton" class="btn" type="button" value="Get Load Report" v-on:click="GetLoadReport()" />
-        <input v-else ref="FunctionReportButton" class="btn" type="button" value="Get Function Report" v-on:click="GetFunctionReport()" />
+        <button v-if="isLoad" ref="LoadReportButton" class="btn" v-on:click="GetLoadReport()">  <div v-if="Loader" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>  <span v-else>Get Load Report</span></button>
+        <button v-else ref="FunctionReportButton" class="btn" v-on:click="GetFunctionReport()">  <div v-if="Loader" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>  <span v-else>Get Function Report</span></button>
     </div>
 
     <table class="table mt-4">
         <thead>
             <tr>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th colspan="4" style="border-right:1px solid #e0e0e4 ;border-left:1px solid #e0e0e4" class="text-center">Power (KW)</th>
@@ -100,16 +102,18 @@
             FunctionId: "Select Function",
             items: null,
             fromdate: null,
-            todate:null,
+            todate: null,
             isLoad: true,
             report: "Load",
+            Loader:false,
             reportResult: null
         },
         methods: {
             async GetLoadReport() {
-                console.log(this.Id,this.fromdate,this.todate)
+                console.log(this.Id, this.fromdate, this.todate)
                 let data = JSON.stringify({ id: this.Id, fromdate: this.fromdate, todate: this.todate })
                 this.$refs.LoadReportButton.classList.toggle("disabled")
+                this.Loader = !this.Loader
                 const response = await fetch('/reports/AverageLoadPowerToday', {
                     method: 'POST',
                     headers: {
@@ -121,10 +125,12 @@
                 const myjson = await response.json()
                 this.reportResult = myjson
                 this.$refs.LoadReportButton.classList.toggle("disabled")
+                this.Loader = !this.Loader
             },
             async GetFunctionReport() {
-                let data = JSON.stringify({ id: this.Id, fromdate: this.fromdate, todate: this.todate  })
+                let data = JSON.stringify({ id: this.Id, fromdate: this.fromdate, todate: this.todate })
                 this.$refs.FunctionReportButton.classList.toggle("disabled")
+                this.Loader = !this.Loader
                 const response = await fetch('/reports/AverageFunctionPowerToday', {
                     method: 'POST',
                     headers: {
@@ -133,10 +139,11 @@
                     },
                     body: data
                 })
-                
+
                 const myjson = await response.json()
                 this.reportResult = myjson
                 this.$refs.FunctionReportButton.classList.toggle("disabled")
+                this.Loader = !this.Loader
             },
             async ToggleReportMethod() {
                 this.reportResult = null
