@@ -485,6 +485,8 @@ namespace SmartPower.Controllers
             return Results;
 
         }
+
+        //من اول هنا
         public IActionResult AveragePower()
         {
             return View();
@@ -583,5 +585,129 @@ namespace SmartPower.Controllers
             Function function = _Context.Functions.FirstOrDefault(f => f.Id == id);
             return Ok(_Context.Load.Where(l=>l.Function == function.FunctionName));
         }
+
+
+
+
+        //الجديد
+
+    /*    public IActionResult EnergySum()
+        {
+            var loads = _Context.Load.Select(l =>
+            new {
+                    l.name,
+                    l.Function
+            }).ToList();
+
+            return Ok(new { MyLoads = loads});
+        }*/
+
+        public IActionResult SumEnergy()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult SumLoadEnergyToday([FromBody] dynamic data)
+        {
+
+            int LoadId = data.id;
+            decimal p1Summ = 0, p2Summ = 0, p3Summ = 0;
+            DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
+            DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
+
+            Load load = _Context.Load.FirstOrDefault(l => l.Id == LoadId);
+
+            List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 != 0).ToList();
+           if (reads.Any())
+            {
+                decimal p1sum = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power1 / 120);
+                decimal p2sum = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power2 / 120);
+                decimal p3sum = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power3 / 120);
+                return Ok(new
+                {
+                    LoadName = load.name,
+                    FromDate = FromDate.ToShortDateString(),
+                    ToDate = ToDate.ToShortDateString(),
+                    LoadEnergy1Sum = Math.Round(p1sum, 3),
+                    LoadEnergy2Sum = Math.Round(p2sum, 3),
+                    LoadEnergy3Sum = Math.Round(p3sum, 3),
+                    LoadEnergySum = Math.Round((p1sum + p2sum + p3sum) , 3)
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    LoadName = "No Readings Exist For this Load"
+                });
+            }
+            
+
+        }
+
+
+
+
+
+        [HttpPost]
+        public IActionResult SumFunctionEnergyToday([FromBody] dynamic data)
+        {
+            decimal totalsumenergy = 0;
+            decimal p1sumAll = 0, p2sumAll = 0, p3sumAll = 0;
+            int FunctionId = data.id;
+            DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
+            DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
+            Function function = _Context.Functions.FirstOrDefault(f => f.Id == FunctionId);
+            var loadsIds = _Context.Load.Where(l => l.Function == function.FunctionName).Select(l => l.Id).ToList();
+            List<SourceReading> readings = new List<SourceReading>();
+            loadsIds.ForEach((id) =>
+            {
+                List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 != 0).ToList();
+                if (reads.Any())
+                {
+                    decimal p1s = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power1 / 120);
+                    decimal p2s = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power2 / 120);
+                    decimal p3s = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power3 / 120);
+                    decimal ps = (p1s + p2s + p3s);
+                    p1sumAll += p1s;
+                    p2sumAll += p2s;
+                    p3sumAll += p3s;
+                    totalsumenergy += ps;
+                }
+               
+            });
+
+
+            return Ok(new
+            {
+                Name = function.FunctionName,
+                FromDate = FromDate.ToShortDateString(),
+                ToDate = ToDate.ToShortDateString(),
+                o1 = Math.Round(p1sumAll, 3),
+                p2 = Math.Round(p2sumAll, 3),
+                p3 = Math.Round(p3sumAll, 3),
+                ps = Math.Round(totalsumenergy, 3)
+            });
+            
+
+        }
+
+     /*   public IActionResult EnergyWatt([FromQuery] int id)
+        {
+            List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 != 0).ToList();
+            decimal result = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power1/ 120);
+            return Ok(result);
+        }*/
+
+
+
     }
 }
+
+
+
+
+
+
+

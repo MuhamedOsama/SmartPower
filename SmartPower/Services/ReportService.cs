@@ -1812,5 +1812,21 @@ namespace SmartPower.Services
             };
             return model;
         }
+
+        public SumEnergy SumEnergy(int LoadId, DateTime Day)
+        {
+            DateTime Date = Day.Date;
+            decimal p1sum = _Context.SourceReading.Where(r => r.PrimarySourceId == LoadId && r.TimeStamp.Date == Date).Sum(r => r.Power1);
+            decimal p2sum = _Context.SourceReading.Where(r => r.PrimarySourceId == LoadId && r.TimeStamp.Date == Date).Sum(r => r.Power2);
+            decimal p3sum = _Context.SourceReading.Where(r => r.PrimarySourceId == LoadId && r.TimeStamp.Date == Date).Sum(r => r.Power3);
+            SumEnergy model = new SumEnergy
+            {
+                LoadPower1Sum = p1sum,
+                LoadPower2Sum = p2sum,
+                LoadPower3Sum = p3sum,
+                LoadPowerSum = (p1sum + p2sum + p3sum)
+            };
+            return model;
+        }
     }
 }
