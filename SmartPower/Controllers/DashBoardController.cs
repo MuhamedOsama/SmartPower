@@ -25,11 +25,13 @@ namespace SmartPower.Controllers
         {
             FactoryService fs = new FactoryService(_Context);
             ViewBag.factories = fs.GetAllFactoriesSimple();
-            DashboardViewModel res = new DashboardViewModel();
-            res.datetime = DateTime.Now;
+            DashboardViewModel res = new DashboardViewModel
+            {
+                datetime = DateTime.Now
+            };
             return View(res) ;
         }
-        public DashboardViewModel DashBoard2(DateTime date, int fac_id = -1) // primary
+        public DashboardViewModel DashBoard2(DateTime ChosenDate, int fac_id = -1) // primary
         {
             //FactoryService fs = new FactoryService(_Context);
             //ViewBag.factories = fs.GetAllFactoriesSimple();
@@ -39,7 +41,7 @@ namespace SmartPower.Controllers
 
             if (fac_id != -1)
             {
-                ds.GetdateOfSourcesOfPrimaries(fac_id, date, ref res);
+                ds.GetdateOfSourcesOfPrimaries(fac_id, ChosenDate, ref res);
                 res.fac_id = fac_id;
                 res.Fac_Name = (_Context.Factory.Single(s => s.Id == fac_id)).Name;
                 res.bol = true;
@@ -57,18 +59,20 @@ namespace SmartPower.Controllers
         {
             FactoryService fs = new FactoryService(_Context);
             ViewBag.factories = fs.GetAllFactoriesSimple();
-            DashboardViewModel res = new DashboardViewModel();
-            res.datetime = DateTime.Now;
+            DashboardViewModel res = new DashboardViewModel
+            {
+                datetime = DateTime.Now
+            };
             return View(res);
         }
-        public DashboardViewModel getLoadDashBoard(DateTime date, int fac_id = -1) // primary
+        public DashboardViewModel getLoadDashBoard(DateTime ChosenDate, int fac_id = -1) // primary
         {
             DashBoardServices ds = new DashBoardServices(_Context);
             DashboardViewModel res = new DashboardViewModel();
 
             if (fac_id != -1)
             {
-                ds.GetdateOfSourcesOfLoads(fac_id, date, ref res);
+                ds.GetdateOfSourcesOfLoads(fac_id, ChosenDate, ref res);
                 res.fac_id = fac_id;
                 res.Fac_Name = (_Context.Factory.Single(s => s.Id == fac_id)).Name;
                 res.bol = true;

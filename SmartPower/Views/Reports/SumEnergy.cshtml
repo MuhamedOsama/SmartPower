@@ -94,9 +94,14 @@
 <script>
     var app = new Vue({
         async mounted() {
-            const response = await fetch('/reports/getloads')
-            const myjson = await response.json()
-            this.items = myjson
+            try {
+                const response = await fetch('/reports/getloads')
+                const myjson = await response.json()
+                this.items = myjson
+            } catch (e) {
+                console.log(e)
+            }
+            
         },
         el: '#app',
 
@@ -118,16 +123,21 @@
                 let data = JSON.stringify({ id: this.Id, fromdate: this.fromdate, todate: this.todate })
                 this.$refs.LoadReportButton.classList.toggle("disabled")
                 this.Loader = !this.Loader
-                const response = await fetch('/reports/SumLoadEnergyToday', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: data
-                })
-                const myjson = await response.json()
-                this.reportResult = myjson
+                try {
+                    const response = await fetch('/reports/SumLoadEnergyToday', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: data
+                    })
+                    const myjson = await response.json()
+                    this.reportResult = myjson
+                } catch (e) {
+                    console.log(e)
+                }
+                
                 this.$refs.LoadReportButton.classList.toggle("disabled")
                 this.Loader = !this.Loader
             },
@@ -135,17 +145,22 @@
                 let data = JSON.stringify({ id: this.Id, fromdate: this.fromdate, todate: this.todate  })
                 this.$refs.FunctionReportButton.classList.toggle("disabled")
                 this.Loader = !this.Loader
-                const response = await fetch('/reports/SumFunctionEnergyToday', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: data
-                })
+                try {
+                    const response = await fetch('/reports/SumFunctionEnergyToday', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: data
+                    })
 
-                const myjson = await response.json()
-                this.reportResult = myjson
+                    const myjson = await response.json()
+                    this.reportResult = myjson
+                } catch (e) {
+                    console.log(e)
+                }
+                
                 this.$refs.FunctionReportButton.classList.toggle("disabled")
                 this.Loader = !this.Loader
             },
@@ -154,15 +169,25 @@
                 console.log(this.$refs.CustomButton)
                 this.$refs.CustomButton.classList.toggle('btn-dark')
                 if (this.report == "Load") {
-                    const response = await fetch('/reports/getfunctions')
-                    const myjson = await response.json()
-                    this.items = myjson
+                    try {
+                        const response = await fetch('/reports/getfunctions')
+                        const myjson = await response.json()
+                        this.items = myjson
+                    } catch (e) {
+                        console.log(e)
+                    }
+                    
                     this.report = "Function"
                     this.isLoad = false
                 } else {
-                    const response = await fetch('/reports/getloads')
-                    const myjson = await response.json()
-                    this.items = myjson
+                    try {
+                        const response = await fetch('/reports/getloads')
+                        const myjson = await response.json()
+                        this.items = myjson
+                    } catch (e) {
+                        console.log(e)
+                    }
+                    
                     this.report = "Load"
                     this.isLoad = true
                 }

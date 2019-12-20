@@ -1,13 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SmartPower.Controllers.Domin;
-using SmartPower.DataContext;
+﻿using SmartPower.DataContext;
 using SmartPower.Domin;
 using SmartPower.Models;
-using SmartPower.Models.report;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 

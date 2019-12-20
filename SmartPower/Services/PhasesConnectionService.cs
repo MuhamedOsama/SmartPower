@@ -1,11 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SmartPower.Controllers.Domin;
+﻿using SmartPower.Controllers.Domin;
 using SmartPower.DataContext;
 using SmartPower.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace SmartPower.Services

@@ -21,7 +21,7 @@ namespace SmartPower.Services
         private readonly SecoundrySourceService secoundrySourceService;
         private readonly PrimarySourceSerivce primarySourceSerivce;
 
-        public new Dictionary<int, List<Tuple<string, bool>>> sourceStatus;
+        public Dictionary<int, List<Tuple<string, bool>>> sourceStatus;
 
         public ReportService(PowerDbContext _context)
         {

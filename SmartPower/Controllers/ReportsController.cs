@@ -10,6 +10,7 @@ using SmartPower.Domin;
 using SmartPower.Domin.report;
 using SmartPower.Models;
 using System.Net.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SmartPower.Controllers
 {
@@ -17,10 +18,11 @@ namespace SmartPower.Controllers
     {
         private readonly PowerDbContext _Context;
         private readonly ReportService ReportService;
-
-        public ReportsController(PowerDbContext _Context)
+        private readonly IWebHostEnvironment _env;
+        public ReportsController(PowerDbContext _Context, IWebHostEnvironment env)
         {
             this._Context = _Context;
+            _env = env;
             ReportService = new ReportService(_Context);
         }
 
@@ -62,10 +64,10 @@ namespace SmartPower.Controllers
             }
             return View(model);
         }
-        public IActionResult TransitTimeAnalysis(int N, DateTime day, int LoadId = -1)
+        public IActionResult TransitTimeAnalysis(int N, DateTime ChosenDay, int LoadId = -1)
         {
             ViewBag.load = _Context.Load;
-            var model = new ReportService(_Context).TransitTimeAnalysis(LoadId, N, day);
+            var model = new ReportService(_Context).TransitTimeAnalysis(LoadId, N, ChosenDay);
             return View(model);
         }
         //ABDO
@@ -91,7 +93,7 @@ namespace SmartPower.Controllers
             return View(res);
         }
 
-        public IActionResult RushHour(DateTime date, int loadId = -1)
+        public IActionResult RushHour(DateTime span, int loadId = -1)
         {
 
             RushHourViewModel res = new RushHourViewModel();
@@ -100,13 +102,13 @@ namespace SmartPower.Controllers
             ViewBag.loads = ls.GetAllLoads();
             if (loadId != -1)
             {
-                res = rs.RushHourForLoadById(loadId, date);
+                res = rs.RushHourForLoadById(loadId, span);
                 ViewBag.LoadName = (ls.GetLoadById(loadId)).name;
             }
             return View(res);
         }
 
-        public IActionResult HarmonicOrder(DateTime date, int HarmOrder = -1, int loadId = -1)
+        public IActionResult HarmonicOrder(DateTime span, int HarmOrder = -1, int loadId = -1)
         {
 
             RushHourViewModel res = new RushHourViewModel();
@@ -115,7 +117,7 @@ namespace SmartPower.Controllers
             ViewBag.loads = ls.GetAllLoads();
             if (HarmOrder != -1)
             {
-                res = rs.HaemonicOrderForLoadId(loadId, date, HarmOrder);
+                res = rs.HaemonicOrderForLoadId(loadId, span, HarmOrder);
                 ViewBag.LoadName = (ls.GetLoadById(loadId)).name;
             }
             return View(res);
@@ -233,12 +235,12 @@ namespace SmartPower.Controllers
         */
 
 
-        public List<querySource> AveragePerDayfromajax(int id, int sort, string val, DateTime date)
+        public List<querySource> AveragePerDayfromajax(int id, int sort, string val, DateTime span)
         {
             FactoryService fs = new FactoryService(_Context);
             ViewBag.factories = fs.GetAllFactoriesSimple();
             ViewBag.factoryname = fs.GetFactoryNameById(id);
-            ViewBag.date = date.ToString("yyyy/MM/dd hh");
+            ViewBag.date = span.ToString("yyyy/MM/dd hh");
             ReportService r = new ReportService(_Context);
             List<querySource> res = new List<querySource>();
 
@@ -249,16 +251,16 @@ namespace SmartPower.Controllers
             {
                 var load = _Context.Load.FirstOrDefault(l => l.Id == Convert.ToInt32(val));
                 SourceReading src;
-                src = _Context.SourceReading.LastOrDefault(s => s.PrimarySourceId == load.SourceId && s.TimeStamp.Day == date.Day && s.Fac_Id == id);
+                src = _Context.SourceReading.LastOrDefault(s => s.PrimarySourceId == load.SourceId && s.TimeStamp.Day == span.Day && s.Fac_Id == id);
                 if (src != null)
                 {
                     res.Add(new querySource());
-                    r.GetAveragePerDay(id, date, ref res[i].CurrentAvg, ref res[i].HarmAvg, ref res[i].VoltageAvg, ref res[i].PowerFactorAvg, load.SourceId);
+                    r.GetAveragePerDay(id, span, ref res[i].CurrentAvg, ref res[i].HarmAvg, ref res[i].VoltageAvg, ref res[i].PowerFactorAvg, load.SourceId);
                     res[i].name = load.name;
                     res[i].sourceid = load.SourceId;
                     res[i].id = load.Id;
                     res[i].facid = id;
-                    res[i].Timestamp = date;
+                    res[i].Timestamp = span;
 
                 }
 
@@ -279,23 +281,23 @@ namespace SmartPower.Controllers
                     {
 
                         // src = _Context.SourceReading.Last(s => s.SecondarySourceId == x.SourceId && s.TimeStamp.Day == date.Day && s.Fac_Id == id);
-                        src = _Context.SourceReading.LastOrDefault(s => s.SecondarySourceId == x.SourceId && s.TimeStamp.Day == date.Day && s.Fac_Id == id);
+                        src = _Context.SourceReading.LastOrDefault(s => s.SecondarySourceId == x.SourceId && s.TimeStamp.Day == span.Day && s.Fac_Id == id);
 
                     }
 
                     else
                     {
-                        src = _Context.SourceReading.LastOrDefault(s => s.PrimarySourceId == x.SourceId && s.TimeStamp.Day == date.Day && s.Fac_Id == id);
+                        src = _Context.SourceReading.LastOrDefault(s => s.PrimarySourceId == x.SourceId && s.TimeStamp.Day == span.Day && s.Fac_Id == id);
                     }
                     if (src != null)
                     {
                         res.Add(new querySource());
-                        r.GetAveragePerDay(id, date, ref res[i].CurrentAvg, ref res[i].HarmAvg, ref res[i].VoltageAvg, ref res[i].PowerFactorAvg, x.SourceId);
+                        r.GetAveragePerDay(id, span, ref res[i].CurrentAvg, ref res[i].HarmAvg, ref res[i].VoltageAvg, ref res[i].PowerFactorAvg, x.SourceId);
                         res[i].name = x.name;
                         res[i].sourceid = x.SourceId;
                         res[i].id = x.Id;
                         res[i].facid = id;
-                        res[i].Timestamp = date;
+                        res[i].Timestamp = span;
                         i++;
                     }
                     else
@@ -327,7 +329,7 @@ namespace SmartPower.Controllers
               return View();
           }
           [HttpPost]*/
-        public IActionResult PeakPerDay(DateTime date, int type = -1, int primId = -1, int loadId = -1)
+        public IActionResult PeakPerDay(DateTime ChosenDate, int type = -1, int primId = -1, int loadId = -1)
         {
             FactoryService fs = new FactoryService(_Context);
             ViewBag.factories = fs.GetAllFactoriesSimple();
@@ -339,11 +341,11 @@ namespace SmartPower.Controllers
             PowerPeakViewModel res = new PowerPeakViewModel();
             if (type == 1)
             {
-                res = rs.PowerPeakPerDay(date, type, primId);
+                res = rs.PowerPeakPerDay(ChosenDate, type, primId);
             }
             else
             {
-                res = rs.PowerPeakPerDay(date, type, loadId);
+                res = rs.PowerPeakPerDay(ChosenDate, type, loadId);
 
             }
 
@@ -364,12 +366,12 @@ namespace SmartPower.Controllers
         }
 
 
-        public List<Instant> INSfromAjax(int id, int sort, int val, DateTime date)
+        public List<Instant> INSfromAjax(int id, int sort, int val, DateTime ChosenDate)
         {
 
             ReportService rs = new ReportService(_Context);
 
-            var model = rs.GetInstants(id, sort, val, date);
+            var model = rs.GetInstants(id, sort, val, ChosenDate);
 
             return model;
 
@@ -579,11 +581,42 @@ namespace SmartPower.Controllers
                 pa = Math.Round(totalAveragePower,3)
             });
         }
-
+        public IActionResult TreePrototype()
+        {
+            return View();
+        }
         public IActionResult test([FromQuery] int id)
         {
-            Function function = _Context.Functions.FirstOrDefault(f => f.Id == id);
-            return Ok(_Context.Load.Where(l=>l.Function == function.FunctionName));
+
+            BudgetReportNode ParentNode = new BudgetReportNode()
+            {
+                text = new { name = "main transformer(500KW)" },
+                image =  "/images/transformer.png"
+            };
+            var loads = _Context.Load.Take(3).ToList();
+            loads.ForEach(l =>
+            {
+                BudgetReportNode load = new BudgetReportNode()
+                {
+                    text = new { name = l.name + "(166KW)"},
+                    image = "/images/machine.svg"
+                };
+                var readings = _Context.SourceReading.Where(r => r.PrimarySourceId == l.Id).Take(3).ToList();
+                readings.ForEach(r =>
+                {
+                    BudgetReportNode read = new BudgetReportNode() { 
+                        text = new { name = "SubLoad" + r.PrimarySourceId.ToString() + "(55KW)" },
+                        image = "/images/engine.png"
+                };
+                    load.children.Add(read);
+                });
+                ParentNode.children.Add(load);
+
+            });
+          
+
+
+            return Ok(new {ParentNode});
         }
 
 
@@ -612,7 +645,6 @@ namespace SmartPower.Controllers
         {
 
             int LoadId = data.id;
-            decimal p1Summ = 0, p2Summ = 0, p3Summ = 0;
             DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
             DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
 
@@ -645,8 +677,6 @@ namespace SmartPower.Controllers
             
 
         }
-
-
 
 
 

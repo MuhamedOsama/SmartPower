@@ -1,4 +1,4 @@
-﻿@model SmartPower.Models.PhasesConnection 
+﻿@model SmartPower.Models.secondarySource
 
 @{
     ViewData["Title"] = "Create";
@@ -11,14 +11,14 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            @Html.HiddenFor(m => Model.SourceID, new { Value = Model.SourceID });
-            @Html.HiddenFor(m => Model.DestinationID, new { Value = Model.DestinationID });
+            @Html.HiddenFor(m => Model.Id, new { Value = Model.Id});
+            @Html.HiddenFor(m => Model.Type, new { Value = Model.Type });
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <span asp-validation-for="Name" class="text-danger">Name</span>
             </div>
 
             <div class="form-group">
@@ -45,7 +45,7 @@
 
                 </select>
             </div>
-            @Html.HiddenFor(m => m.FacId, new { value = Model.FacId })
+            @Html.HiddenFor(m => m.Fac_Id, new { value = Model.Fac_Id})
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>

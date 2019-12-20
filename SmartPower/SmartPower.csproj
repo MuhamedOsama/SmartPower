@@ -1,28 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
-    <ApplicationIcon />
-    <Win32Resource />
 
+    <ApplicationIcon />
   </PropertyGroup>
 
+  
   <ItemGroup>
-    <Content Include="..\..\..\..\..\%2540work\abdo\SmartPower Version 1.8\SmartPower2\SmartPower\Views\Reports\Shared\Error.cshtml" />
-    <Content Include="..\..\..\..\..\%2540work\abdo\SmartPower Version 1.8\SmartPower2\SmartPower\Views\Reports\Shared\_Layout.cshtml" />
-    <Content Include="..\..\..\..\..\%2540work\abdo\SmartPower Version 1.8\SmartPower2\SmartPower\Views\Reports\Shared\_ValidationScriptsPartial.cshtml" />
-    <Content Include="..\..\..\..\..\%2540work\abdo\SmartPower Version 1.8\SmartPower2\SmartPower\Views\Shared\Error.cshtml" />
-    <Content Include="..\..\..\..\..\%2540work\abdo\SmartPower Version 1.8\SmartPower2\SmartPower\Views\Shared\_Layout.cshtml" />
-    <Content Include="..\..\..\..\..\%2540work\abdo\SmartPower Version 1.8\SmartPower2\SmartPower\Views\Shared\_ValidationScriptsPartial.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.11" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="RestSharp" Version="106.6.10" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +28,9 @@
   <ItemGroup>
     <Content Update="Views\Reports\AveragePerDay.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Reports\TreePrototype.cshtml">
+      <CopyToOutputDirectory>Do not ctropy</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

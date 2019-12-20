@@ -27,7 +27,7 @@ namespace SmartPower.Services
             var Sources = _Context.secondarySource.ToList();
             //mapping
             var SourceDM = new List<SecoundrySouresDataModelSim>();
-            if (Sources.Count != null)
+            if (Sources.Count != 0)
             {
                  SourceDM = MappingToPSDMSimple(Sources);
             }

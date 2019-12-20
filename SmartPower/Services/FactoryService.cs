@@ -2,7 +2,6 @@
 using SmartPower.Controllers.Domin;
 using SmartPower.DataContext;
 using SmartPower.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,7 +55,7 @@ namespace SmartPower.Services
         {
             List<FactoryDataModel> Factories = new List<FactoryDataModel>();
             var Results = _context.Factory.ToList();
-            if (Results.Count != null)
+            if (Results.Count != 0)
             {
                 foreach (var item in Results)
                 {
