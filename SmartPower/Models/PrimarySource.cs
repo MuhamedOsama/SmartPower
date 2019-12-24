@@ -22,7 +22,7 @@ namespace SmartPower.Models
         public string Type { get; set; }
         public int MaxCurrent { get; set;  }
         public string Topology { get; set; }
-       
+        public SourceType SourceType { get; set; }
         public ICollection<SourceReading> SourceLogs { get; set; } 
         public ICollection<secondarySource> secondarySources { get; set; }
        // public ICollection<Load> loads { get; set; }

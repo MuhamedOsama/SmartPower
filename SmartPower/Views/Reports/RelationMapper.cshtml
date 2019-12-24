@@ -1,0 +1,97 @@
+﻿@model List<SmartPower.Domin.report.SumEnergy>
+
+@{
+    ViewData["Title"] = "Energy Sum";
+}
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+<link href="~/assets/css/Loader.css" rel="stylesheet" />
+
+<div class="container-fluid" id="app">
+    <div class="row justify-content-center mb-1">
+        <h2 class="text-center">
+            Transformer to Machine
+        </h2>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <select  v-model="ParentId" class="custom-select">
+                <option disabled selected>Select</option>
+                <option v-for="source in parents" :key="source.id" :value="source.id">
+                    {{source.name}}
+                </option>
+            </select>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <select :disabled="!ParentId" v-model="ChildId" class="custom-select">
+                <option disabled selected>Select</option>
+                <option v-for="source in children" :key="source.id" :value="source.id">
+                    {{source.name}}
+                </option>
+            </select>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <button ref="LoadReportButton" class="btn btn-primary" v-on:click="Map()">  <div v-if="loader" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>  <span v-else>Submit</span></button>
+    </div>
+
+</div>
+<script>
+
+</script>
+<script>
+    var app = new Vue({
+        async mounted() {
+            const response = await fetch('/reports/GetSourcesForRelation?type=1')
+            const myjson = await response.json()
+            this.parents = myjson.transformers
+            this.children = myjson.machines
+        },
+        el: '#app',
+
+        data: {
+            loader: false,
+            sources: null,
+            ParentId: null,
+            ChildId:null,
+            machineId: null,
+            typeId:null,
+            submachineId:null,
+            parents: [],
+            sourcesCopy: null,
+            children:[]
+
+        },
+        methods: {
+            async Map() {
+                try {
+                    const response = await fetch('/reports/MapSources', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body:  JSON.stringify({ ParentId: this.ParentId, ChildId: this.ChildId})
+                    })
+                    const myjson = await response.json()
+                    console.log(myjson)
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+        }
+    })
+</script>
+<script>
+</script>
+<style>
+    .node {
+        width: 60px;
+    }
+</style>
+
+
+

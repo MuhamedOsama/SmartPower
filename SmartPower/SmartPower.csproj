@@ -9,15 +9,14 @@
 
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.4.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="RestSharp" Version="106.6.10" />
   </ItemGroup>
 
@@ -28,6 +27,15 @@
   <ItemGroup>
     <Content Update="Views\Reports\AveragePerDay.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Reports\RelationMapperMS.cshtml">
+      <CopyToOutputDirectory>Do not ctropy</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\Reports\RelationMapper.cshtml">
+      <CopyToOutputDirectory>Do not ctropy</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\Reports\TypeMapper.cshtml">
+      <CopyToOutputDirectory>Do not ctropy</CopyToOutputDirectory>
     </Content>
     <Content Update="Views\Reports\TreePrototype.cshtml">
       <CopyToOutputDirectory>Do not ctropy</CopyToOutputDirectory>

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace SmartPower.DataContext
 {
     public class PowerDbContext:DbContext
@@ -28,13 +27,21 @@ namespace SmartPower.DataContext
         public DbSet<powerPeak> powerPeak { get; set; }
         public DbSet<PowerAvg> PowerAvg { get; set; }
         public DbSet<Production> Production { get; set; }
-
-        public PowerDbContext(DbContextOptions<PowerDbContext> options ):base(options)
-        {
-
-        }
+        public DbSet<SourceType> sourceType { get; set; }
+       
         public DbSet<PhasesConnection> PhasesConnection { get; set; }
         public DbSet<BusinessTypeFac> businessTypeFac { get; set; }
-
+        public DbSet<SourceRelation> SourceRelations { get; set; }
+        public PowerDbContext(DbContextOptions<PowerDbContext> options) : base(options)
+        {
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SourceType>().HasData(
+                new SourceType { TypeId = 1, TypeName = "Transformer" },
+                new SourceType { TypeId = 2, TypeName = "Machine" },
+                new SourceType { TypeId = 3, TypeName = "SubMachine" }
+                );
+        }
     }
 }

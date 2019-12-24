@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartPower.DataContext;
 
 namespace SmartPower.Migrations
 {
     [DbContext(typeof(PowerDbContext))]
-    partial class PowerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191222220157_TypeSeeding")]
+    partial class TypeSeeding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -480,24 +482,6 @@ namespace SmartPower.Migrations
                     b.ToTable("SourceReading");
                 });
 
-            modelBuilder.Entity("SmartPower.Models.SourceRelation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ChildId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ParentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SourceRelations");
-                });
-
             modelBuilder.Entity("SmartPower.Models.SourceType", b =>
                 {
                     b.Property<int>("TypeId")
@@ -510,7 +494,7 @@ namespace SmartPower.Migrations
 
                     b.HasKey("TypeId");
 
-                    b.ToTable("sourceType");
+                    b.ToTable("SourceType");
 
                     b.HasData(
                         new

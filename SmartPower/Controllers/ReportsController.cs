@@ -11,6 +11,9 @@ using SmartPower.Domin.report;
 using SmartPower.Models;
 using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
+using System.Text.Json;
+using Newtonsoft.Json;
+using SmartPower.Models.SerializationModels;
 
 namespace SmartPower.Controllers
 {
@@ -506,15 +509,16 @@ namespace SmartPower.Controllers
         [HttpPost]
         public IActionResult AverageLoadPowerToday([FromBody] dynamic data)
         {
+            string json = System.Text.Json.JsonSerializer.Serialize(data);
+            SumLoadEnergy result = JsonConvert.DeserializeObject<SumLoadEnergy>(json);
+            int LoadId = result.id;
+            DateTime FromDate = Convert.ToDateTime(((string)result.fromdate)).Date;
+            DateTime ToDate = Convert.ToDateTime(((string)result.todate)).Date;
+            decimal p1avg = 0, p2avg = 0, p3avg = 0;
 
-            int LoadId = data.id;
-            decimal p1avg=0, p2avg=0, p3avg = 0;
-            DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
-            DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
-            
             Load load = _Context.Load.FirstOrDefault(l => l.Id == LoadId);
-            
-            List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && (r.TimeStamp.Date>= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 !=0 ).ToList();
+
+            List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 != 0).ToList();
             if (reads.Any())
             {
                 p1avg = reads.Average(r => r.Power1);
@@ -525,10 +529,10 @@ namespace SmartPower.Controllers
                     LoadName = load.name,
                     FromDate = FromDate.ToShortDateString(),
                     ToDate = ToDate.ToShortDateString(),
-                    LoadPower1Average = Math.Round(p1avg,3),
-                    LoadPower2Average = Math.Round(p2avg,3),
-                    LoadPower3Average = Math.Round(p3avg,3),
-                    LoadPowerAverage = Math.Round((p1avg + p2avg + p3avg) / 3,3)
+                    LoadPower1Average = Math.Round(p1avg, 3),
+                    LoadPower2Average = Math.Round(p2avg, 3),
+                    LoadPower3Average = Math.Round(p3avg, 3),
+                    LoadPowerAverage = Math.Round((p1avg + p2avg + p3avg), 3)
                 });
             }
             else
@@ -538,36 +542,42 @@ namespace SmartPower.Controllers
                     LoadName = "No Readings Exist For this Load"
                 });
             }
-            
 
-           
+
+
         }
         [HttpPost]
         public IActionResult AverageFunctionPowerToday([FromBody] dynamic data)
         {
             decimal totalAveragePower = 0;
             decimal p1avgAll = 0, p2avgAll = 0, p3avgAll = 0;
-            int FunctionId = data.id;
-            DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
-            DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
+
+            string json = System.Text.Json.JsonSerializer.Serialize(data);
+            SumLoadEnergy result = JsonConvert.DeserializeObject<SumLoadEnergy>(json);
+            int FunctionId = result.id;
+            DateTime FromDate = Convert.ToDateTime(((string)result.fromdate)).Date;
+            DateTime ToDate = Convert.ToDateTime(((string)result.todate)).Date;
+
+
+           
             Function function = _Context.Functions.FirstOrDefault(f => f.Id == FunctionId);
             var loadsIds = _Context.Load.Where(l => l.Function == function.FunctionName).Select(l => l.Id).ToList();
             List<SourceReading> readings = new List<SourceReading>();
             loadsIds.ForEach((id) =>
             {
-                List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 !=0 ).ToList();
+                List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 != 0).ToList();
                 if (reads.Any())
                 {
                     decimal p1a = reads.Average(r => r.Power1);
                     decimal p2a = reads.Average(r => r.Power2);
                     decimal p3a = reads.Average(r => r.Power3);
-                    decimal pa = (p1a + p2a + p3a) / 3;
+                    decimal pa = (p1a + p2a + p3a);
                     p1avgAll += p1a;
                     p2avgAll += p2a;
                     p3avgAll += p3a;
                     totalAveragePower += pa;
                 }
-                
+
             });
 
             return Ok(new
@@ -575,15 +585,96 @@ namespace SmartPower.Controllers
                 Name = function.FunctionName,
                 FromDate = FromDate.ToShortDateString(),
                 ToDate = ToDate.ToShortDateString(),
-                o1 = Math.Round(p1avgAll,3),
-                p2 = Math.Round(p2avgAll,3),
-                p3 = Math.Round(p3avgAll,3),
-                pa = Math.Round(totalAveragePower,3)
+                o1 = Math.Round(p1avgAll, 3),
+                p2 = Math.Round(p2avgAll, 3),
+                p3 = Math.Round(p3avgAll, 3),
+                pa = Math.Round(totalAveragePower, 3)
             });
         }
         public IActionResult TreePrototype()
         {
             return View();
+        }
+        public IActionResult TypeMapper()
+        {
+            return View();
+        }
+        public IActionResult RelationMapper()
+        {
+            return View();
+        }
+        public IActionResult RelationMapperMS()
+        {
+            return View();
+        }
+        public IActionResult GetSources()
+        {
+            //dynamic sources = new
+            //{
+            //    Transformers = _Context.PrimarySource,
+            //    Machines = _Context.PrimarySource.Where(s => s.SourceType != null && s.SourceType.TypeId == 2),
+            //    SubMachines = _Context.PrimarySource.Where(s => s.SourceType == null && s.SourceType.TypeId == 3)
+            //};
+            dynamic sources = new
+            {
+                sources = _Context.PrimarySource.Where(s => s.SourceType == null),
+            };
+            return Ok(sources);
+        }
+        public IActionResult GetSourcesForRelation([FromQuery] int type)
+        {
+            //map transformer to machine
+            if(type == 1)
+            {
+                dynamic sources = new
+                {
+                    Transformers = _Context.PrimarySource.Where(s => s.SourceType.TypeId == 1),
+                    Machines = _Context.PrimarySource.Where(s=>s.SourceType.TypeId == 2)
+                };
+                return Ok(sources);
+            }
+            else
+            {
+                dynamic sources = new
+                {
+                    Machines = _Context.PrimarySource.Where(s => s.SourceType.TypeId == 2),
+                    SubMachines = _Context.PrimarySource.Where(s => s.SourceType.TypeId == 3)
+                };
+                return Ok(sources);
+            }
+            
+        }
+        public IActionResult MapSources([FromBody] JsonElement data)
+        {
+            string json = System.Text.Json.JsonSerializer.Serialize(data);
+            dynamic result = JsonConvert.DeserializeObject<RelationMap>(json);
+            int ParentId = result.ParentId;
+            int ChildId = result.ChildId;
+            _Context.SourceRelations.Add(new SourceRelation { ParentId = ParentId, ChildId = ChildId});
+            _Context.SaveChanges();
+            return Ok(_Context.SourceRelations);
+        }
+        public IActionResult Map([FromBody] JsonElement data)
+        {
+            string json = System.Text.Json.JsonSerializer.Serialize(data);
+            dynamic result = JsonConvert.DeserializeObject<TypeMap>(json);
+            int SourceId = result.SourceId;
+            int TypeId = result.TypeId;
+
+            var source = _Context.PrimarySource.FirstOrDefault(s => s.Id == SourceId);
+            source.SourceType = _Context.sourceType.FirstOrDefault(t => t.TypeId == TypeId);
+            //transformer.SourceType = _Context.sourceType.FirstOrDefault(t => t.TypeId == 1);
+            //var machine = _Context.PrimarySource.FirstOrDefault(s => s.Id == machineId);
+
+            //var submachine = _Context.PrimarySource.FirstOrDefault(s => s.Id == submachineId);
+            //submachine.SourceType = _Context.sourceType.FirstOrDefault(t => t.TypeId == 3);
+            //_Context.SourceRelations.Add(new SourceRelation { });
+            _Context.SaveChanges();
+            return Ok(new { source });
+            //var Transformer = _Context.PrimarySource.FirstOrDefault(s => s.Id == transformerId);
+            //var Machine = _Context.PrimarySource.FirstOrDefault(s => s.Id == machineId);
+            //var SubMachine = _Context.PrimarySource.FirstOrDefault(s => s.Id == submachineId);
+
         }
         public IActionResult test([FromQuery] int id)
         {
@@ -591,32 +682,33 @@ namespace SmartPower.Controllers
             BudgetReportNode ParentNode = new BudgetReportNode()
             {
                 text = new { name = "main transformer(500KW)" },
-                image =  "/images/transformer.png"
+                image = "/images/transformer.png"
             };
             var loads = _Context.Load.Take(3).ToList();
             loads.ForEach(l =>
             {
                 BudgetReportNode load = new BudgetReportNode()
                 {
-                    text = new { name = l.name + "(166KW)"},
+                    text = new { name = l.name + "(166KW)" },
                     image = "/images/machine.svg"
                 };
                 var readings = _Context.SourceReading.Where(r => r.PrimarySourceId == l.Id).Take(3).ToList();
                 readings.ForEach(r =>
                 {
-                    BudgetReportNode read = new BudgetReportNode() { 
+                    BudgetReportNode read = new BudgetReportNode()
+                    {
                         text = new { name = "SubLoad" + r.PrimarySourceId.ToString() + "(55KW)" },
                         image = "/images/engine.png"
-                };
+                    };
                     load.children.Add(read);
                 });
                 ParentNode.children.Add(load);
 
             });
-          
 
 
-            return Ok(new {ParentNode});
+
+            return Ok(new { ParentNode });
         }
 
 
@@ -624,16 +716,16 @@ namespace SmartPower.Controllers
 
         //الجديد
 
-    /*    public IActionResult EnergySum()
-        {
-            var loads = _Context.Load.Select(l =>
-            new {
-                    l.name,
-                    l.Function
-            }).ToList();
+        /*    public IActionResult EnergySum()
+            {
+                var loads = _Context.Load.Select(l =>
+                new {
+                        l.name,
+                        l.Function
+                }).ToList();
 
-            return Ok(new { MyLoads = loads});
-        }*/
+                return Ok(new { MyLoads = loads});
+            }*/
 
         public IActionResult SumEnergy()
         {
@@ -644,14 +736,17 @@ namespace SmartPower.Controllers
         public IActionResult SumLoadEnergyToday([FromBody] dynamic data)
         {
 
-            int LoadId = data.id;
-            DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
-            DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
+            string json = System.Text.Json.JsonSerializer.Serialize(data);
+            SumLoadEnergy result = JsonConvert.DeserializeObject<SumLoadEnergy>(json);
+
+            int LoadId = result.id;
+            DateTime FromDate = Convert.ToDateTime(((string)result.fromdate)).Date;
+            DateTime ToDate = Convert.ToDateTime(((string)result.todate)).Date;
 
             Load load = _Context.Load.FirstOrDefault(l => l.Id == LoadId);
 
             List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 != 0).ToList();
-           if (reads.Any())
+            if (reads.Any())
             {
                 decimal p1sum = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power1 / 120);
                 decimal p2sum = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power2 / 120);
@@ -664,7 +759,7 @@ namespace SmartPower.Controllers
                     LoadEnergy1Sum = Math.Round(p1sum, 3),
                     LoadEnergy2Sum = Math.Round(p2sum, 3),
                     LoadEnergy3Sum = Math.Round(p3sum, 3),
-                    LoadEnergySum = Math.Round((p1sum + p2sum + p3sum) , 3)
+                    LoadEnergySum = Math.Round((p1sum + p2sum + p3sum), 3)
                 });
             }
             else
@@ -674,7 +769,7 @@ namespace SmartPower.Controllers
                     LoadName = "No Readings Exist For this Load"
                 });
             }
-            
+
 
         }
 
@@ -685,9 +780,15 @@ namespace SmartPower.Controllers
         {
             decimal totalsumenergy = 0;
             decimal p1sumAll = 0, p2sumAll = 0, p3sumAll = 0;
-            int FunctionId = data.id;
-            DateTime FromDate = Convert.ToDateTime(((string)data.fromdate)).Date;
-            DateTime ToDate = Convert.ToDateTime(((string)data.todate)).Date;
+
+            string json = System.Text.Json.JsonSerializer.Serialize(data);
+            SumLoadEnergy result = JsonConvert.DeserializeObject<SumLoadEnergy>(json);
+
+            
+
+            int FunctionId = result.id;
+            DateTime FromDate = Convert.ToDateTime(((string)result.fromdate)).Date;
+            DateTime ToDate = Convert.ToDateTime(((string)result.todate)).Date;
             Function function = _Context.Functions.FirstOrDefault(f => f.Id == FunctionId);
             var loadsIds = _Context.Load.Where(l => l.Function == function.FunctionName).Select(l => l.Id).ToList();
             List<SourceReading> readings = new List<SourceReading>();
@@ -705,7 +806,7 @@ namespace SmartPower.Controllers
                     p3sumAll += p3s;
                     totalsumenergy += ps;
                 }
-               
+
             });
 
 
@@ -719,16 +820,16 @@ namespace SmartPower.Controllers
                 p3 = Math.Round(p3sumAll, 3),
                 ps = Math.Round(totalsumenergy, 3)
             });
-            
+
 
         }
 
-     /*   public IActionResult EnergyWatt([FromQuery] int id)
-        {
-            List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 != 0).ToList();
-            decimal result = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power1/ 120);
-            return Ok(result);
-        }*/
+        /*   public IActionResult EnergyWatt([FromQuery] int id)
+           {
+               List<SourceReading> reads = _Context.SourceReading.Where(r => r.PrimarySourceId == load.Id && (r.TimeStamp.Date >= FromDate && r.TimeStamp.Date <= ToDate) && r.Power1 != 0 && r.Power2 != 0 && r.Power3 != 0).ToList();
+               decimal result = reads.Aggregate(reads.First().Power1, (acc, x) => acc + x.Power1/ 120);
+               return Ok(result);
+           }*/
 
 
 

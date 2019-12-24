@@ -638,7 +638,7 @@ namespace SmartPower.Controllers
                         }
                     }
                     // clear table 
-                    Context.Database.ExecuteSqlCommand("Delete From PowerAvg");
+                    Context.Database.ExecuteSqlRaw("Delete From PowerAvg");
 
                     var reading = new PowerAvg()
                     {
