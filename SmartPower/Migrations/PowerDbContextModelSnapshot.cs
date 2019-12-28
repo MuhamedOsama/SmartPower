@@ -480,25 +480,7 @@ namespace SmartPower.Migrations
                     b.ToTable("SourceReading");
                 });
 
-            modelBuilder.Entity("SmartPower.Models.SourceRelation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ChildId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ParentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SourceRelations");
-                });
-
-            modelBuilder.Entity("SmartPower.Models.SourceType", b =>
+            modelBuilder.Entity("SmartPower.Models.Type", b =>
                 {
                     b.Property<int>("TypeId")
                         .ValueGeneratedOnAdd()
@@ -510,24 +492,7 @@ namespace SmartPower.Migrations
 
                     b.HasKey("TypeId");
 
-                    b.ToTable("sourceType");
-
-                    b.HasData(
-                        new
-                        {
-                            TypeId = 1,
-                            TypeName = "Transformer"
-                        },
-                        new
-                        {
-                            TypeId = 2,
-                            TypeName = "Machine"
-                        },
-                        new
-                        {
-                            TypeId = 3,
-                            TypeName = "SubMachine"
-                        });
+                    b.ToTable("Type");
                 });
 
             modelBuilder.Entity("SmartPower.Models.Wire", b =>
@@ -696,7 +661,7 @@ namespace SmartPower.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmartPower.Models.SourceType", "SourceType")
+                    b.HasOne("SmartPower.Models.Type", "SourceType")
                         .WithMany()
                         .HasForeignKey("SourceTypeTypeId");
                 });
