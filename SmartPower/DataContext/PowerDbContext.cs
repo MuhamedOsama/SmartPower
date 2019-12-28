@@ -38,9 +38,9 @@ namespace SmartPower.DataContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SourceType>().HasData(
-                new SourceType { TypeId = 1, TypeName = "Transformer" },
-                new SourceType { TypeId = 2, TypeName = "Machine" },
-                new SourceType { TypeId = 3, TypeName = "SubMachine" }
+                new SourceType { Id = 1, TypeName = "Transformer" },
+                new SourceType { Id = 2, TypeName = "Machine" },
+                new SourceType { Id = 3, TypeName = "SubMachine" }
                 );
         }
     }

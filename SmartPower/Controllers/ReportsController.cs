@@ -628,8 +628,8 @@ namespace SmartPower.Controllers
             {
                 dynamic sources = new
                 {
-                    Transformers = _Context.PrimarySource.Where(s => s.SourceType.TypeId == 1),
-                    Machines = _Context.PrimarySource.Where(s=>s.SourceType.TypeId == 2)
+                    Transformers = _Context.PrimarySource.Where(s => s.SourceType.Id == 1),
+                    Machines = _Context.PrimarySource.Where(s=>s.SourceType.Id == 2)
                 };
                 return Ok(sources);
             }
@@ -637,8 +637,8 @@ namespace SmartPower.Controllers
             {
                 dynamic sources = new
                 {
-                    Machines = _Context.PrimarySource.Where(s => s.SourceType.TypeId == 2),
-                    SubMachines = _Context.PrimarySource.Where(s => s.SourceType.TypeId == 3)
+                    Machines = _Context.PrimarySource.Where(s => s.SourceType.Id == 2),
+                    SubMachines = _Context.PrimarySource.Where(s => s.SourceType.Id == 3)
                 };
                 return Ok(sources);
             }
@@ -662,7 +662,7 @@ namespace SmartPower.Controllers
             int TypeId = result.TypeId;
 
             var source = _Context.PrimarySource.FirstOrDefault(s => s.Id == SourceId);
-            source.SourceType = _Context.sourceType.FirstOrDefault(t => t.TypeId == TypeId);
+            source.SourceType = _Context.sourceType.FirstOrDefault(t => t.Id == TypeId);
             //transformer.SourceType = _Context.sourceType.FirstOrDefault(t => t.TypeId == 1);
             //var machine = _Context.PrimarySource.FirstOrDefault(s => s.Id == machineId);
 

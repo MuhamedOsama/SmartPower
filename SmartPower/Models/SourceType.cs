@@ -9,7 +9,7 @@ namespace SmartPower.Models
     public class SourceType
     {
         [Key]
-        public int TypeId { get; set; }
+        public int Id { get; set; }
         public string TypeName { get; set; }
     }
 }
